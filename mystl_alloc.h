@@ -200,18 +200,18 @@ namespace mystl
   char *__default_alloc_template<threads, inst>::end_free = 0;
 
   template<bool threads, int inst>
-  char *__default_alloc_template<threads, inst>::heap_free = 0;
+  size_t __default_alloc_template<threads, inst>::heap_size = 0;
 
   template<bool threads, int inst>
-  __default_alloc_template<thread, inst>::obj * volatile
-  __default_alloc_template<thread, inst>::free_list[__NFREELISTS] =
+  typename __default_alloc_template<threads, inst>::obj * volatile
+  __default_alloc_template<threads, inst>::free_list[__NFREELISTS] =
   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,};
 
   template<bool threads, int inst>
   void *__default_alloc_template<threads, inst>::refill(size_t n)
   {
     int nobjs = 20;
-    char *chunk = chunk_alloc(n, objs);
+    char *chunk = chunk_alloc(n, nobjs);
     obj *volatile *my_free_list;
     obj *result;
     obj *current_obj, *next_obj;
@@ -294,7 +294,7 @@ namespace mystl
         start_free = (char *) malloc_alloc::allocate(bytes_to_get);
       }
       heap_size += bytes_to_get;
-      end_free = start_free + byte_to_get;
+      end_free = start_free + bytes_to_get;
       return chunk_alloc(size, nobjs);
     }
   }
