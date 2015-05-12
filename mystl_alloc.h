@@ -39,6 +39,10 @@
   #define __THROW_BAD_ALLOC throw std::bad_alloc()
 #endif
 
+#include <cstddef>
+#include <cstdlib>
+#include <limits>
+
 namespace mystl
 {
   template <int inst>
@@ -53,7 +57,7 @@ namespace mystl
     public:
       static void *allocate(size_t n)
       {
-        void *result = malloc(n);
+        void *result = std::malloc(n);
         if(result == 0) result = oom_malloc(n);
         return result;
       }
@@ -86,7 +90,7 @@ namespace mystl
   void *__malloc_alloc_template<inst>::oom_malloc(size_t n)
   {
     void (*my_malloc_handler)();
-    void result;
+    void *result;
     for(;;)
     {
       my_malloc_handler = __malloc_alloc_oom_handler;
@@ -104,7 +108,7 @@ namespace mystl
   void *__malloc_alloc_template<inst>::oom_realloc(void *p, size_t n)
   {
     void (*my_malloc_handler)();
-    void result;
+    void *result;
     for(;;)
     {
       my_malloc_handler = __malloc_alloc_oom_handler;
@@ -115,9 +119,10 @@ namespace mystl
       (*my_malloc_handler)();
       result = realloc(p, n);
       if(result) return result;
+    }
   }
 
-  typename __malloc_alloc_template<0> malloc_alloc;
+  typedef __malloc_alloc_template<0> malloc_alloc;
 
   enum {__ALIGN = 8};
   enum {__MAX_BYTES = 128};
@@ -136,12 +141,12 @@ namespace mystl
       {
         union obj* free_list_link;
         char client_data[1];
-      }
+      };
     private:
       static obj * volatile free_list[__NFREELISTS];
-      static size_t FREELIST_INDEX(size_t butes)
+      static size_t FREELIST_INDEX(size_t bytes)
       {
-        return (((bytes) + ALIGN - 1)/ALIGN - 1);
+        return (((bytes) + __ALIGN - 1)/__ALIGN - 1);
       }
       static void *refill(size_t n);
       static char *chunk_alloc(size_t size, int &nobjs);
