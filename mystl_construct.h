@@ -71,7 +71,7 @@ namespace mystl
 
   template <class ForwardIterator>
   inline void __destroy_aux(ForwardIterator first,
-      ForwardIterator last, std::__false_type)
+      ForwardIterator last, __false_type)
   {
     for(; first != last; ++first)
     {
@@ -80,7 +80,7 @@ namespace mystl
   }
 
   template <class ForwardIterator>
-  inline void __destroy_aux(ForwardIterator, ForwardIterator, std::__true_type)
+  inline void __destroy_aux(ForwardIterator, ForwardIterator, __true_type)
   {
   }
 
