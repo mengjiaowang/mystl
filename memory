@@ -88,3 +88,5 @@ namespace mystl
       T *pointee;
   };
 } // end of namespace stl
+
+#endif

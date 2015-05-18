@@ -35,6 +35,7 @@
 #define MYSTL_CONSTRUCT_H_
 
 #include <new>
+#include "type_traits.h"
 
 namespace mystl
 {

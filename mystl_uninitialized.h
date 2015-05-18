@@ -35,6 +35,8 @@
 #define MYSTL_UNINITIALIZED_H_
 
 #include "mystl_construct.h"
+#include "type_traits.h"
+#include <cstring> // will be removed once memmove is implemented
 
 namespace mystl
 {
@@ -115,14 +117,15 @@ namespace mystl
   inline char *uninitialized_copy(const char *first, const char *last,
       char *result)
   {
-    memmove(result, first, last - first);
+    //TODO: will be changed to mystl::memmove
+    std::memmove(result, first, last - first);
     return result + (last - first);
   }
 
   inline wchar_t *uninitialized_copy(const wchar_t *first, const wchar_t *last,
       wchar_t *result)
   {
-    memmove(result, first, sizeof(wchar_t)*(last - first));
+    std::memmove(result, first, sizeof(wchar_t)*(last - first));
     return result + (last - first);
   }
 
