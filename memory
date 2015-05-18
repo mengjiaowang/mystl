@@ -1,0 +1,90 @@
+/*
+ * A self study of the book <The Annotated STL Sources - using SGI STL>
+ * by Hou Jie. Feel free to use the source code, but please add the copyright
+ * notice from HP.
+ *
+ */
+
+/*
+ *
+ * Copyright (c) 1994
+ * Hewlett-Packard Company
+ *
+ * Permission to use, copy, modify, distribute and sell this software
+ * and its documentation for any purpose is hereby granted without fee,
+ * provided that the above copyright notice appear in all copies and
+ * that both that copyright notice and this permission notice appear
+ * in supporting documentation.  Hewlett-Packard Company makes no
+ * representations about the suitability of this software for any
+ * purpose.  It is provided "as is" without express or implied warranty.
+ *
+ *
+ * Copyright (c) 1996,1997
+ * Silicon Graphics Computer Systems, Inc.
+ *
+ * Permission to use, copy, modify, distribute and sell this software
+ * and its documentation for any purpose is hereby granted without fee,
+ * provided that the above copyright notice appear in all copies and
+ * that both that copyright notice and this permission notice appear
+ * in supporting documentation.  Silicon Graphics makes no
+ * representations about the suitability of this software for any
+ * purpose.  It is provided "as is" without express or implied warranty.
+ */
+
+#ifndef MYSTL_MEMORY_H_
+#define MYSTL_MEMORY_H_
+
+#include "mystl_alloc.h"
+#include "mystl_construct.h"
+#include "mystl_uninitialized.h"
+
+namespace mystl
+{
+  template <class T>
+  class auto_ptr
+  {
+    public:
+      explicit auto_ptr(T *p = 0): pointee(p) {}
+      #ifdef __STL_MEMBER_TEMPLATES
+      template <class U>
+      auto_ptr(auto_ptr<U> &rhs): pointee(rhs.release()) {}
+      #endif
+      ~auto_ptr(){delete pointee;}
+      #ifdef __STL_MEMBER_TEMPLATES
+      template <class U>
+      auto_ptr<T> &operator=(auto_ptr<U> &rhs)
+      {
+        if(this != &rhs) reset(rhs.release());
+        return *this;
+      }
+      #endif
+      T &operator*()
+      {
+        return *pointee;
+      }
+      T *operator->()
+      {
+        return pointee;
+      }
+      T *get()
+      {
+        return pointee;
+      }
+      T *release()
+      {
+        T *tmp = pointee;
+        pointee = 0;
+        return tmp;
+      }
+      void reset(T *p = 0)
+      {
+        if(p != pointee)
+        {
+          delete pointee;
+          pointee = p;
+        }
+      }
+    private:
+      T *pointee;
+  };
+} // end of namespace stl
