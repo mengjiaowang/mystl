@@ -38,6 +38,8 @@
 #include "mystl_construct.h"
 #include "mystl_uninitialized.h"
 
+#include <algorithm>
+
 namespace mystl
 {
   template <class T, class Alloc = alloc>
@@ -46,7 +48,9 @@ namespace mystl
     public:
       typedef T value_type;
       typedef value_type* pointer;
+      typedef const value_type* const_pointer;
       typedef value_type* iterator;
+      typedef const value_type* const_iterator;
       typedef value_type& reference;
       typedef size_t size_type;
       typedef ptrdiff_t difference_type;
@@ -68,12 +72,15 @@ namespace mystl
       void fill_initialize(size_type n, const T& value)
       {
         start = allocate_and_fill(n, value);
+        finish = start + n;
         end_of_storage = finish;
       }
 
     public:
       iterator begin() {return start;}
+      const_iterator begin()const {return start;}
       iterator end() {return finish;}
+      const_iterator end()const {return finish;}
       size_type size()const {return size_type(end()-begin());}
       size_type capacity()const
       {
@@ -95,6 +102,7 @@ namespace mystl
       }
       reference front() {return *begin();}
       reference back() {return *(end()-1);}
+
       void push_back(const T &x)
       {
         if(finish != end_of_storage)
@@ -107,21 +115,34 @@ namespace mystl
           insert_aux(end(), x);
         }
       }
+
       void pop_back()
       {
         --finish;
         mystl::destroy(finish);
       }
+
       iterator erase(iterator position)
       {
         if(position + 1 != end())
         {
-          mystl::copy(position + 1, finish, position);
+          //TODO: change to mystl::copy
+          std::copy(position + 1, finish, position);
         }
         --finish;
         destroy(finish);
         return position;
       }
+
+      iterator erase(iterator first, iterator last)
+      {
+        //TODO: change to mystl::copy
+        iterator i = std::copy(last, finish, first);
+        destroy(i, finish);
+        finish = finish - (last - first);
+        return first;
+      }
+
       void resize(size_type new_size, const T &x)
       {
         if(new_size < size())
@@ -133,14 +154,9 @@ namespace mystl
           insert(end(), new_size - size(), x);
         }
       }
-      void resize(size_type new_size)
-      {
-        resize(new_size, T());
-      }
-      void clear()
-      {
-        erase(begin(), end());
-      }
+
+      void resize(size_type new_size) { resize(new_size, T());}
+      void clear() { erase(begin(), end());}
 
     protected:
       iterator allocate_and_fill(size_type n, const T &x)
@@ -150,6 +166,11 @@ namespace mystl
         return result;
       }
   };
+
+  template <class T, class Alloc>
+  void vector<T, Alloc>::insert_aux(iterator position, const T &x)
+  {
+  }
 } // end of my stl
 
 #endif

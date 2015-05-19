@@ -35,33 +35,23 @@
 #define MYSTL_UNINITIALIZED_H_
 
 #include "mystl_construct.h"
+#include "mystl_iterator.h"
 #include "type_traits.h"
-#include <cstring> // will be removed once memmove is implemented
+
+// will be removed
+#include <algorithm>
+#include <cstring>
 
 namespace mystl
 {
   // uninitialized_fill_n
   template <class ForwardIterator, class Size, class T>
-  inline ForwardIterator uninitialized_fill_n(ForwardIterator first,
-      Size n, const T &x)
-  {
-    return __uninitialized_fill_n(first, n, x, value_type(first));
-  }
-
-  template <class ForwardIterator, class Size, class T, class T1>
-  inline ForwardIterator __uninitialized_fill_n(ForwardIterator first,
-      Size n, const T &x, T1*)
-  {
-    typedef typename __type_traits<T1>::is_POD_type is_POD;
-    return __uninitialized_fill_n_aux(first, n, x, is_POD());
-  }
-
-  template <class ForwardIterator, class Size, class T>
   inline ForwardIterator
   __uninitialized_fill_n_aux(ForwardIterator first, Size n,
       const T &x, __true_type)
   {
-    return fill_n(first, n, x);
+    //TODO:change to mystl::fill_n
+    return std::fill_n(first, n, x);
   }
 
   template <class ForwardIterator, class Size, class T>
@@ -76,6 +66,21 @@ namespace mystl
       construct(&*cur, x);
     }
     return cur;
+  }
+
+  template <class ForwardIterator, class Size, class T, class T1>
+  inline ForwardIterator __uninitialized_fill_n(ForwardIterator first,
+      Size n, const T &x, T1*)
+  {
+    typedef typename __type_traits<T1>::is_POD_type is_POD;
+    return mystl::__uninitialized_fill_n_aux(first, n, x, is_POD());
+  }
+
+  template <class ForwardIterator, class Size, class T>
+  inline ForwardIterator uninitialized_fill_n(ForwardIterator first,
+      Size n, const T &x)
+  {
+    return mystl::__uninitialized_fill_n(first, n, x, value_type(first));
   }
 
   // uninitialized_copy

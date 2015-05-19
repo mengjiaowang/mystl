@@ -54,7 +54,7 @@ namespace mystl
   template <class T1>
   inline void destroy(T1 *pointer)
   {
-    pointer->~T();
+    pointer->~T1();
   }
 
   template <class ForwardIterator>
