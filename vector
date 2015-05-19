@@ -31,62 +31,12 @@
  * purpose.  It is provided "as is" without express or implied warranty.
  */
 
-#ifndef MYSTL_MEMORY
-#define MYSTL_MEMORY
+#ifndef MYSTL_VECTOR
+#define MYSTL_VECTOR
 
 #include "mystl_alloc.h"
 #include "mystl_construct.h"
 #include "mystl_uninitialized.h"
-
-namespace mystl
-{
-  template <class T>
-  class auto_ptr
-  {
-    public:
-      explicit auto_ptr(T *p = 0): pointee(p) {}
-      #ifdef __STL_MEMBER_TEMPLATES
-      template <class U>
-      auto_ptr(auto_ptr<U> &rhs): pointee(rhs.release()) {}
-      #endif
-      ~auto_ptr(){delete pointee;}
-      #ifdef __STL_MEMBER_TEMPLATES
-      template <class U>
-      auto_ptr<T> &operator=(auto_ptr<U> &rhs)
-      {
-        if(this != &rhs) reset(rhs.release());
-        return *this;
-      }
-      #endif
-      T &operator*()
-      {
-        return *pointee;
-      }
-      T *operator->()
-      {
-        return pointee;
-      }
-      T *get()
-      {
-        return pointee;
-      }
-      T *release()
-      {
-        T *tmp = pointee;
-        pointee = 0;
-        return tmp;
-      }
-      void reset(T *p = 0)
-      {
-        if(p != pointee)
-        {
-          delete pointee;
-          pointee = p;
-        }
-      }
-    private:
-      T *pointee;
-  };
-} // end of namespace stl
+#include "mystl_vector.h"
 
 #endif
