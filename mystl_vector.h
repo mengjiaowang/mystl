@@ -175,6 +175,7 @@ namespace mystl
       void resize(size_type new_size) { resize(new_size, T());}
       void clear() { erase(begin(), end());}
 
+
     protected:
       iterator allocate_and_fill(size_type n, const T &x)
       {
@@ -277,6 +278,42 @@ namespace mystl
       finish = new_finish;
       end_of_storage = new_start + len;
     }
+  }
+
+  template <class T, class Alloc>
+  inline bool operator==(const mystl::vector<T, Alloc> &x, const mystl::vector<T, Alloc> &y)
+  {
+    return x.size() == y.size() && std::equal(x.begin(), x.end(), y.begin());
+  }
+
+  template <class T, class Alloc>
+  inline bool operator!=(const mystl::vector<T, Alloc> &x, const mystl::vector<T, Alloc> &y)
+  {
+    return !(x == y);
+  }
+
+  template <class T, class Alloc>
+  inline bool operator<(const vector<T, Alloc> &x, const vector<T, Alloc> &y)
+  {
+    return std::lexicographical_compare(x.begin(), x.end(), y.begin(), y.end());
+  }
+
+  template <class T, class Alloc>
+  inline bool operator>(const mystl::vector<T, Alloc> &x, const mystl::vector<T, Alloc> &y)
+  {
+    return (y < x);
+  }
+
+  template <class T, class Alloc>
+  inline bool operator>=(const mystl::vector<T, Alloc> &x, const mystl::vector<T, Alloc> &y)
+  {
+    return !(x < y);
+  }
+
+  template <class T, class Alloc>
+  inline bool operator<=(const mystl::vector<T, Alloc> &x, const mystl::vector<T, Alloc> &y)
+  {
+    return !(y < x);
   }
 
 } // end of my stl

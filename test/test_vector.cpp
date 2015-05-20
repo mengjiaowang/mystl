@@ -35,5 +35,14 @@ int main()
   std::cout << "size = " << v.size() << " capacity = " << v.capacity() << std::endl;
   std::cout << "empty = " << v.empty() << std::endl;
 
+  // test compare
+  mystl::vector<int> v1(2,9), v2(2,10);
+  std::cout << "v1 == v2: " << (v1 == v2) << std::endl;
+  std::cout << "v1 != v2: " << (v1 != v2) << std::endl;
+  std::cout << "v1 < v2: " << (v1 < v2) << std::endl;
+  std::cout << "v1 > v2: " << (v1 > v2) << std::endl;
+  std::cout << "v1 <= v2: " << (v1 <= v2) << std::endl;
+  std::cout << "v1 >= v2: " << (v1 >= v2) << std::endl;
+
   return 0;
 }
