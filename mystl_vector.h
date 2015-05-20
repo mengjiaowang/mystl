@@ -155,6 +155,23 @@ namespace mystl
         }
       }
 
+      iterator insert(iterator position, const T &x)
+      {
+        size_type n = position - begin();
+        if(finish != end_of_storage && position == end())
+        {
+          construct(position, x);
+          ++finish;
+        }
+        else
+        {
+          insert_aux(position, x);
+        }
+        return begin() + n;
+      }
+
+      void insert(iterator position, size_type n, const T &x);
+
       void resize(size_type new_size) { resize(new_size, T());}
       void clear() { erase(begin(), end());}
 
@@ -168,9 +185,100 @@ namespace mystl
   };
 
   template <class T, class Alloc>
+  void vector<T, Alloc>::insert(iterator position, size_type n, const T &x)
+  {
+    if(n != 0)
+    {
+      if(size_type(end_of_storage - finish) >= n) // enough space
+      {
+        T x_copy = x;
+        const size_type elems_after = finish - position;
+        iterator old_finish = finish;
+        if(elems_after > n)
+        {
+          mystl::uninitialized_copy(finish - n, finish, finish);
+          finish += n;
+          //TODO: change to mystl::copy_backward and mystl::fill
+          std::copy_backward(position, old_finish - n, old_finish);
+          std::fill(position, position + n, x_copy);
+        }
+        else
+        {
+          mystl::uninitialized_fill_n(finish - n, n - elems_after, x_copy);
+          finish += n - elems_after;
+          mystl::uninitialized_copy(position, old_finish, finish);
+          finish += elems_after;
+          std::fill(position, old_finish, x_copy);
+        }
+      }
+      else // no enough space
+      {
+        const size_type old_size = size();
+        const size_type len = old_size + std::max(old_size, n);
+        iterator new_start = data_allocator::allocate(len);
+        iterator new_finish = new_start;
+        try
+        {
+          new_finish = mystl::uninitialized_copy(start, position, new_start);
+          new_finish = mystl::uninitialized_fill_n(new_finish, n, x);
+          new_finish = mystl::uninitialized_copy(position, finish, new_finish);
+        }
+        catch(...)
+        {
+          // commit or rollback
+          mystl::destroy(new_start, new_finish);
+          data_allocator::deallocate(new_start, len);
+          throw;
+        }
+        mystl::destroy(start, finish);
+        deallocate();
+        start = new_start;
+        finish = new_finish;
+        end_of_storage = new_start + len;
+      }
+    }
+  }
+
+  template <class T, class Alloc>
   void vector<T, Alloc>::insert_aux(iterator position, const T &x)
   {
+    if(finish != end_of_storage)
+    {
+      mystl::construct(finish, *(finish-1));
+      ++finish;
+      T x_copy = x;
+      //TODO: change to mystl::copy_backward
+      std::copy_backward(position, finish - 2, finish - 1);
+      *position = x_copy;
+    }
+    else
+    {
+      const size_type old_size = size();
+      const size_type len = old_size != 0 ? 2 * old_size : 1;
+      iterator new_start = data_allocator::allocate(len);
+      iterator new_finish = new_start;
+      try
+      {
+        new_finish = mystl::uninitialized_copy(start, position, new_start);
+        construct(new_finish, x);
+        ++new_finish;
+        new_finish = mystl::uninitialized_copy(position, finish, new_finish);
+      }
+      catch(...)
+      {
+        // commit or rollback
+        mystl::destroy(new_start, new_finish);
+        data_allocator::deallocate(new_start, len);
+        throw;
+      }
+      mystl::destroy(begin(), end());
+      deallocate();
+      start = new_start;
+      finish = new_finish;
+      end_of_storage = new_start + len;
+    }
   }
+
 } // end of my stl
 
 #endif

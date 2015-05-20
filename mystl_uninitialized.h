@@ -85,38 +85,39 @@ namespace mystl
 
   // uninitialized_copy
   template <class InputIterator, class ForwardIterator>
-  inline ForwardIterator uninitialized_copy(InputIterator first,
-      InputIterator last, ForwardIterator result)
-  {
-    return __uninitialized_copy(first, last, result, value_type(result));
-  }
-
-  template <class InputIterator, class ForwardIterator, class T, class T1>
-  inline ForwardIterator __uninitialized_copy(ForwardIterator first,
-      ForwardIterator last, const T &x, T1*)
-  {
-    typedef typename __type_traits<T1>::is_POD_typd is_POD;
-    __uninitialized_copy_aux(first, last, x, is_POD());
-  }
-
-  template <class InputIterator, class ForwardIterator>
   inline ForwardIterator __uninitialized_copy_aux(InputIterator first,
       InputIterator last, ForwardIterator result, __true_type)
   {
-    return copy(first, last, result);
+    // TODO: change to mystl::copy
+    return std::copy(first, last, result);
   }
 
   template <class InputIterator, class ForwardIterator>
   inline ForwardIterator __uninitialized_copy_aux(InputIterator first,
       InputIterator last, ForwardIterator result, __false_type)
   {
-    // TODO:: add exception handling to fit C++ standards
+    // TODO: add exception handling to fit C++ standards
     ForwardIterator cur = result;
     for(; first != last; ++first, ++cur)
     {
-      construct(&*cur, *first);
+      mystl::construct(&*cur, *first);
     }
     return cur;
+  }
+
+  template <class InputIterator, class ForwardIterator, class T1>
+  inline ForwardIterator __uninitialized_copy(InputIterator first,
+      InputIterator last, ForwardIterator result, T1*)
+  {
+    typedef typename __type_traits<T1>::is_POD_type is_POD;
+    return mystl::__uninitialized_copy_aux(first, last, result, is_POD());
+  }
+
+  template <class InputIterator, class ForwardIterator>
+  inline ForwardIterator uninitialized_copy(InputIterator first,
+      InputIterator last, ForwardIterator result)
+  {
+    return mystl::__uninitialized_copy(first, last, result, value_type(result));
   }
 
   inline char *uninitialized_copy(const char *first, const char *last,
@@ -136,21 +137,6 @@ namespace mystl
 
   // uninitialized_fill
   template <class ForwardIterator, class T>
-  inline void uninitialized_fill(ForwardIterator first, ForwardIterator last,
-      const T &x)
-  {
-    __uninitialized_fill(first, last, x, value_type(first));
-  }
-
-  template <class ForwardIterator, class T, class T1>
-  inline void __uninitialized_fill(ForwardIterator first, ForwardIterator last,
-      const T &x, T1*)
-  {
-    typedef typename __type_traits<T1>::is_POD_type is_POD();
-    __uninitialized_fill_aux(first, last, x, is_POD());
-  }
-
-  template <class ForwardIterator, class T>
   inline void __uninitialized_fill_aux(ForwardIterator first,
       ForwardIterator last, const T &x, __true_type)
   {
@@ -167,6 +153,21 @@ namespace mystl
     {
       construct(&*cur, x);
     }
+  }
+
+  template <class ForwardIterator, class T, class T1>
+  inline void __uninitialized_fill(ForwardIterator first, ForwardIterator last,
+      const T &x, T1*)
+  {
+    typedef typename __type_traits<T1>::is_POD_type is_POD();
+    __uninitialized_fill_aux(first, last, x, is_POD());
+  }
+
+  template <class ForwardIterator, class T>
+  inline void uninitialized_fill(ForwardIterator first, ForwardIterator last,
+      const T &x)
+  {
+    __uninitialized_fill(first, last, x, value_type(first));
   }
 
 } // end of namespace mystl

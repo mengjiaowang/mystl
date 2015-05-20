@@ -25,10 +25,10 @@ int main()
   std::cout << "front = " << v.front() << " back = " << v.back() << std::endl;
 
   // test resize
-  //v.resize(0);
-  //std::cout << "size = " << v.size() << std::endl;
-  //v.resize(4);
-  //std::cout << "size = " << v.size() << std::endl;
+  v.resize(0);
+  std::cout << "size = " << v.size() << std::endl;
+  v.resize(4);
+  std::cout << "size = " << v.size() << std::endl;
 
   // test clear
   v.clear();
