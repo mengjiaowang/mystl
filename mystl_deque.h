@@ -34,6 +34,12 @@
 #ifndef MYSTL_DEQUE_H_
 #define MYSTL_DEQUE_H_
 
+#include "mystl_alloc.h"
+#include "mystl_construct.h"
+#include "mystl_uninitialized.h"
+
+#include <algorithm>
+
 namespace mystl
 {
 
@@ -46,10 +52,10 @@ template <class T, class Ref, class Ptr, size_t BufSiz>
 struct __deque_iterator
 {
   typedef __deque_iterator<T, T&, T*, BufSiz> iterator;
-  typedef __deque_iterator<T, const T&, const T*, BufSize> const_iterator;
+  typedef __deque_iterator<T, const T&, const T*, BufSiz> const_iterator;
   static size_t buffer_size(){return __deque_buf_size(BufSiz, sizeof(T));}
 
-  typedef random_access_iterator_tag iterator_cagetory;
+  typedef random_access_iterator_tag iterator_category;
   typedef T value_type;
   typedef Ptr pointer;
   typedef Ref reference;
@@ -111,7 +117,7 @@ struct __deque_iterator
   }
   self &operator+=(difference_type n)
   {
-    difference_type offset < n + (cur + first);
+    difference_type offset = n + (cur + first);
     if(offset >= 0 && offset < difference_type(buffer_size()))
     {
       cur += n;
@@ -135,7 +141,7 @@ struct __deque_iterator
   {
     return *this += -n;
   }
-  self operator-()
+  self operator-(difference_type n)
   {
     self tmp = *this;
     return tmp -= n;
@@ -158,20 +164,101 @@ struct __deque_iterator
   }
 };
 
+template<class T, class Ref, class Ptr, size_t BufSiz>
+inline random_access_iterator_tag
+  iterator_category(const __deque_iterator<T, Ref, Ptr, BufSiz>&)
+{
+  return random_access_iterator_tag();
+}
+
+template<class T, class Ref, class Ptr, size_t BufSiz>
+inline typename iterator_traits<T>::value_type*
+value_type(const __deque_iterator<T, Ref, Ptr, BufSiz>&)
+{
+  return static_cast<typename iterator_traits<T>::value_type*>(0);
+}
+
 template <class T, class Alloc=alloc, size_t BufSiz = 0>
 class deque
 {
   public:
     typedef T value_type;
     typedef value_type* pointer;
+    typedef value_type& reference;
+    typedef size_t size_type;
+    typedef __deque_iterator<T, T&, T*, BufSiz> iterator;
+    typedef ptrdiff_t difference_type;
 
   protected:
     typedef pointer* map_pointer;
 
   protected:
+    iterator start;
+    iterator finish;
     map_pointer map;
     size_type map_size;
+
+  protected:
+    typedef simple_alloc<value_type, Alloc> data_allocator;
+    typedef simple_alloc<pointer, Alloc> map_allocator;
+
+  public:
+    //constructor
+    deque(): start(), finish(), map_size(0){}
+    deque(int n, const value_type &value)
+    :start(), finish(), map_size(0)
+    {
+      fill_initialize(n, value);
+    }
+
+  private:
+    void fill_initialize(size_type n, const value_type &value);
+    void create_map_and_node(size_type number_elements);
+    static size_t buffer_size(){return __deque_buf_size(BufSiz, sizeof(T));}
+
+  public:
+    iterator begin(){return start;}
+    iterator end(){return finish;}
+    reference operator[](size_type n)
+    {
+      return start[difference_type(n)]; // __deque_iterator::operator[]
+    }
+    reference front(){return *start;}
+    reference back()
+    {
+      iterator tmp = finish;
+      --tmp; // __deque_iterator::operator--
+      return *tmp; // __deque_iterator::operator*
+    }
+    size_type size() const{return finish-start;} // __deque_iterator::operator-
+    size_type max_size() const{return size_type(-1);}
+    bool empty() const{return finish==start;}
 };
+
+template <class T, class Alloc, size_t BufSize>
+void deque<T, Alloc, BufSize>::fill_initialize(size_type n, const value_type &value)
+{
+  create_map_and_node(n);
+  map_pointer cur;
+  try
+  {
+    for(cur = start.node; cur < finish.node; ++cur)
+    {
+      mystl::uninitialized_fill(*cur, *cur + buffer_size(), value);
+    }
+    mystl::uninitialized_fill(finish.first, finish.cur, value);
+  }
+  catch(...)
+  {
+    // commit or rollback
+    // TODO: add exception handling code
+  }
+}
+
+template <class T, class Alloc, size_t BufSize>
+void deque<T, Alloc, BufSize>::create_map_and_node(size_type n)
+{
+}
 
 } // end of namespace stl
 

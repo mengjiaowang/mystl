@@ -158,7 +158,6 @@ namespace mystl
   {
     __advance(i, n, iterator_category(i));
   }
-
 } // end of namespace mystl
 
 #endif
