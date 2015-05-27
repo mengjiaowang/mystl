@@ -72,7 +72,7 @@ namespace mystl
   inline ForwardIterator __uninitialized_fill_n(ForwardIterator first,
       Size n, const T &x, T1*)
   {
-    typedef typename __type_traits<T1>::is_POD_type is_POD;
+    typedef typename mystl::__type_traits<T1>::is_POD_type is_POD;
     return mystl::__uninitialized_fill_n_aux(first, n, x, is_POD());
   }
 
@@ -109,7 +109,7 @@ namespace mystl
   inline ForwardIterator __uninitialized_copy(InputIterator first,
       InputIterator last, ForwardIterator result, T1*)
   {
-    typedef typename __type_traits<T1>::is_POD_type is_POD;
+    typedef typename mystl::__type_traits<T1>::is_POD_type is_POD;
     return mystl::__uninitialized_copy_aux(first, last, result, is_POD());
   }
 
@@ -140,18 +140,19 @@ namespace mystl
   inline void __uninitialized_fill_aux(ForwardIterator first,
       ForwardIterator last, const T &x, __true_type)
   {
-    fill(first, last, x);
+    // TODO: will be changed to mystl::fill
+    std::fill(first, last, x);
   }
 
   template <class ForwardIterator, class T>
   inline void __uninitialized_fill_aux(ForwardIterator first,
       ForwardIterator last, const T &x, __false_type)
   {
-    // TODO:: add exception handling to fit C++ standards
+    // TODO: add exception handling to fit C++ standards
     ForwardIterator cur = first;
     for( ; cur != last; ++cur)
     {
-      construct(&*cur, x);
+      mystl::construct(&*cur, x);
     }
   }
 
@@ -159,7 +160,7 @@ namespace mystl
   inline void __uninitialized_fill(ForwardIterator first, ForwardIterator last,
       const T &x, T1*)
   {
-    typedef typename __type_traits<T1>::is_POD_type is_POD();
+    typedef typename mystl::__type_traits<T1>::is_POD_type is_POD;
     __uninitialized_fill_aux(first, last, x, is_POD());
   }
 
