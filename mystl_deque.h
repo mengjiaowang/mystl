@@ -210,11 +210,63 @@ class deque
     {
       fill_initialize(n, value);
     }
+  public:
+    void push_back(const value_type &t)
+    {
+      if(finish.cur != finish.last - 1)
+      {
+        mystl::construct(finish.cur, t);
+        ++finish.cur;
+      }
+      else
+      {
+        push_back_aux(t);
+      }
+    }
+
+    void push_front(const value_type &t)
+    {
+      if(start.cur != start.first)
+      {
+        mystl::construct(start.cur - 1, t);
+        --start.cur;
+      }
+      else
+      {
+        push_front_aux(t);
+      }
+    }
 
   private:
     void fill_initialize(size_type n, const value_type &value);
     void create_map_and_node(size_type number_elements);
     static size_t buffer_size(){return __deque_buf_size(BufSiz, sizeof(T));}
+    void push_back_aux(const value_type &t);
+    void push_front_aux(const value_type &t);
+    void reserve_map_at_back(size_type nodes_to_add = 1)
+    {
+      if(nodes_to_add + 1 > map_size - (finish.node - map))
+      {
+        reallocate_map(nodes_to_add, false);
+      }
+    }
+    void reserve_map_at_front(size_type nodes_to_add = 1)
+    {
+      if(nodes_to_add > start.node - map)
+      {
+        reallocate_map(nodes_to_add, true);
+      }
+    }
+    void reallocate_map(size_type nodes_to_add, bool add_at_front);
+    static size_type initial_map_size() {return 8;}
+    pointer allocate_node()
+    {
+      return data_allocator::allocate(buffer_size());
+    }
+    void deallocate_node(pointer n)
+    {
+      data_allocator::deallocate(n, buffer_size());
+    }
 
   public:
     iterator begin(){return start;}
@@ -256,8 +308,108 @@ void deque<T, Alloc, BufSize>::fill_initialize(size_type n, const value_type &va
 }
 
 template <class T, class Alloc, size_t BufSize>
-void deque<T, Alloc, BufSize>::create_map_and_node(size_type n)
+void deque<T, Alloc, BufSize>::create_map_and_node(size_type num_elements)
 {
+  size_type num_nodes = num_elements / buffer_size() + 1;
+  // TODO: will be changed to mystl::max
+  map_size = std::max(initial_map_size(), num_nodes + 2);
+  map = map_allocator::allocate(map_size);
+  map_pointer nstart = map + (map_size - num_nodes) / 2;
+  map_pointer nfinish = nstart + num_nodes - 1;
+  map_pointer cur;
+  try
+  {
+    for(cur = nstart; cur <= nfinish; ++cur)
+    {
+      *cur = allocate_node();
+    }
+  }
+  catch(...)
+  {
+    // commit or rollback
+  }
+  start.set_node(nstart);
+  finish.set_node(nfinish);
+  start.cur = start.first;
+  finish.cur = finish.first + num_elements % buffer_size();
+}
+
+template <class T, class Alloc, size_t BufSize>
+void deque<T, Alloc, BufSize>::push_back_aux(const value_type &t)
+{
+  value_type t_copy = t;
+  reserve_map_at_back();
+  *(finish.node + 1) = allocate_node();
+  try
+  {
+    mystl::construct(finish.cur, t_copy);
+    finish.set_node(finish.node + 1);
+    finish.cur = finish.first;
+  }
+  catch(...)
+  {
+    // commit or rollback
+  }
+}
+
+template <class T, class Alloc, size_t BufSize>
+void deque<T, Alloc, BufSize>::push_front_aux(const value_type &t)
+{
+  value_type t_copy = t;
+  reserve_map_at_front();
+  *(start.node - 1) = allocate_node();
+  try
+  {
+    set_node(start.node - 1);
+    start.cur = start.last - 1;
+    mystl::construct(start.cur, t_copy);
+  }
+  catch(...)
+  {
+    // commit or rollback
+    start.set_node(start.node + 1);
+    start.cur = start.first;
+    deallocate_node(*(start.node - 1));
+    throw;
+  }
+}
+
+template <class T, class Alloc, size_t BufSize>
+void deque<T, Alloc, BufSize>::reallocate_map(size_type nodes_to_add, bool add_at_front)
+{
+  size_type old_num_nodes = finish.node - start.node + 1;
+  size_type new_num_nodes = old_num_nodes + nodes_to_add;
+  map_pointer new_nstart;
+  if(map_size > 2 * new_num_nodes)
+  {
+    new_nstart = map + (map_size - new_num_nodes) / 2
+      + (add_at_front ? nodes_to_add : 0);
+    if(new_nstart < start.node)
+    {
+      // TODO: will be changed to mystl::copy
+      std::copy(start.node, finish.node + 1, new_nstart);
+    }
+    else
+    {
+      // TODO: will be changed to mystl::copy_backward
+      std::copy_backward(start.node, finish.node + 1, new_nstart + old_num_nodes);
+    }
+  }
+  else
+  {
+    // TODO: will be changed to mystl::max
+    size_type new_map_size = map_size + std::max(map_size, nodes_to_add) + 2;
+    size_type new_map = map_allocator::allocate(new_map_size);
+    new_nstart = new_map + (new_map_size - new_num_nodes) / 2
+      + (add_at_front ? nodes_to_add : 0);
+    // TODO: will be changed to mystl::copy
+    std::copy(start.node, finish.node + 1, new_nstart);
+    map_allocator::deallocate(map);
+    map = new_map;
+    map_size = new_map_size;
+  }
+  start.set_node(new_nstart);
+  finish.set_node(new_nstart + old_num_nodes - 1);
 }
 
 } // end of namespace stl
