@@ -204,7 +204,10 @@ class deque
 
   public:
     //constructor
-    deque(): start(), finish(), map_size(0){}
+    deque(): start(), finish(), map_size(0)
+    {
+      create_map_and_node(0);
+    }
     deque(int n, const value_type &value)
     :start(), finish(), map_size(0)
     {
@@ -360,7 +363,7 @@ void deque<T, Alloc, BufSize>::push_front_aux(const value_type &t)
   *(start.node - 1) = allocate_node();
   try
   {
-    set_node(start.node - 1);
+    start.set_node(start.node - 1);
     start.cur = start.last - 1;
     mystl::construct(start.cur, t_copy);
   }
@@ -399,7 +402,7 @@ void deque<T, Alloc, BufSize>::reallocate_map(size_type nodes_to_add, bool add_a
   {
     // TODO: will be changed to mystl::max
     size_type new_map_size = map_size + std::max(map_size, nodes_to_add) + 2;
-    size_type new_map = map_allocator::allocate(new_map_size);
+    map_pointer new_map = map_allocator::allocate(new_map_size);
     new_nstart = new_map + (new_map_size - new_num_nodes) / 2
       + (add_at_front ? nodes_to_add : 0);
     // TODO: will be changed to mystl::copy
