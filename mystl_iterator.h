@@ -136,6 +136,26 @@ namespace mystl
   }
 
   template <class InputIterator, class Distance>
+  inline void distance(InputIterator first, InputIterator last, Distance &n)
+  {
+    __distance(first, last, n, iterator_category(first));
+  }
+
+  template <class InputIterator, class Distance>
+  inline void __distance(InputIterator first, InputIterator last,
+      Distance &n, input_iterator_tag)
+  {
+    while (first != last) {++first; ++n;}
+  }
+
+  template <class RandomAccessIterator, class Distance>
+  inline void __distance(RandomAccessIterator first, RandomAccessIterator last,
+      Distance& n, random_access_iterator_tag)
+  {
+    n += last - first;
+  }
+
+  template <class InputIterator, class Distance>
   inline void __advance(InputIterator &i, Distance n,
       input_iterator_tag)
   {
@@ -143,7 +163,7 @@ namespace mystl
   }
 
   template <class BidirectionalIterator, class Distance>
-  inline void __advance(BidirectionalIterator &i, Distance n,
+  inline void __advance(BidirectionalIterator &i, Distance &n,
       bidirectional_iterator_tag)
   {
     if( n >= 0)
