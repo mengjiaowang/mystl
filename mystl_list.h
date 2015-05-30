@@ -103,9 +103,11 @@ namespace mystl
   class list
   {
     public:
+      typedef T value_type;
       typedef __list_iterator<T, T&, T*> iterator;
       typedef const iterator const_iterator;
       typedef T & reference;
+      typedef const value_type& const_reference;
       typedef size_t size_type;
       typedef __list_node<T> * link_type;
 
