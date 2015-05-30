@@ -37,6 +37,7 @@
 #include "mystl_alloc.h"
 #include "mystl_construct.h"
 #include "mystl_uninitialized.h"
+#include "mystl_iterator.h"
 
 #include <algorithm>
 
@@ -99,6 +100,24 @@ namespace mystl
     }
   };
 
+  template <class T, class Ref, class Ptr>
+    inline bidirectional_iterator_tag
+    iterator_category(const __list_iterator<T, Ref, Ptr>&) {
+      return bidirectional_iterator_tag();
+    }
+
+  template <class T, class Ref, class Ptr>
+    inline T*
+    value_type(const __list_iterator<T, Ref, Ptr>&) {
+      return 0;
+    }
+
+  template <class T, class Ref, class Ptr>
+    inline ptrdiff_t*
+    distance_type(const __list_iterator<T, Ref, Ptr>&) {
+      return 0;
+    }
+
   template <class T, class Alloc = alloc>
   class list
   {
@@ -143,14 +162,13 @@ namespace mystl
       iterator end(){return node;}
       const_iterator end() const{return node;}
       bool empty(){return node->next == node;}
-      /*
+
       size_type size() const
       {
         size_type result = 0;
-        distance(begin(), end(), result);
+        mystl::distance(begin(), end(), result);
         return result;
       }
-      */
       reference front(){return *begin();}
       reference back(){return *(--end());}
       iterator insert(iterator position, const T& x)
