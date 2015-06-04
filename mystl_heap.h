@@ -155,6 +155,16 @@ namespace mystl
     __adjust_heap(first, Distance(0), Distance(last - first), value);
   }
 
+  template <class RandomAccessIterator, class T, class Compare, class Distance>
+  void __pop_heap(RandomAccessIterator first,
+                  RandomAccessIterator last,
+                  RandomAccessIterator result,
+                  T value, Compare comp, Distance*)
+  {
+    *result = *first;
+    __adjust_heap(first, Distance(0), Distance(last - first), value, comp);
+  }
+
   template <class RandomAccessIterator, class T>
   inline void __pop_heap_aux(RandomAccessIterator first, RandomAccessIterator last,
       T*)
@@ -162,10 +172,23 @@ namespace mystl
     __pop_heap(first, last - 1, last - 1, T(*(last - 1)), distance_type(first));
   }
 
+  template <class RandomAccessIterator, class T, class Compare>
+  inline void __pop_heap_aux(RandomAccessIterator first, RandomAccessIterator last,
+      T*, Compare comp)
+  {
+    __pop_heap(first, last - 1, last - 1, T(*(last - 1)), comp, distance_type(first));
+  }
+
   template <class RandomAccessIterator>
   inline void pop_heap(RandomAccessIterator first, RandomAccessIterator last)
   {
     __pop_heap_aux(first, last, value_type(first));
+  }
+
+  template <class RandomAccessIterator, class Compare>
+  inline void pop_heap(RandomAccessIterator first, RandomAccessIterator last, Compare comp)
+  {
+    __pop_heap_aux(first, last, value_type(first), comp);
   }
 
   template <class RandomAccessIterator>
