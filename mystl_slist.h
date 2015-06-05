@@ -185,7 +185,17 @@ namespace mystl
         head.next = node->next;
         destroy_node(node);
       }
+      iterator erase_after(iterator pos)
+      {
+        return iterator((list_node*)erase_after(pos.node));
+      }
+      iterator erase_after(iterator first, iterator last)
+      {
+        return iterator((list_node*)erase_after(first, last));
+      }
+      void clear(){erase_after(&head, 0);}
 
+    private:
       list_node_base *erase_after(list_node_base *pos)
       {
         list_node *next = (list_node*)(pos->next);
@@ -209,7 +219,6 @@ namespace mystl
         return last_node;
       }
 
-      void clear(){erase_after(&head, 0);}
   };
 
 } // end of namespace mystl

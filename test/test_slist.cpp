@@ -17,6 +17,11 @@ int main()
   // test iterator
   print_slist(sl);
 
+  // test erase_after
+  mystl::slist<int>::iterator iter = sl.begin();
+  sl.erase_after(iter);
+  print_slist(sl);
+
   // test clear
   sl.clear();
   std::cout << "size = " << sl.size() << std::endl;
