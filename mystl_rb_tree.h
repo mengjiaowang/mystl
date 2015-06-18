@@ -31,8 +31,8 @@
  * purpose.  It is provided "as is" without express or implied warranty.
  */
 
-#ifndef MYSTL_TREE_H_
-#define MYSTL_TREE_H_
+#ifndef MYSTL_RB_TREE_H_
+#define MYSTL_RB_TREE_H_
 
 #include "memory"
 #include "mystl_iterator.h"
@@ -214,8 +214,173 @@ namespace mystl
         mystl::destroy(&p->value_field);
         put_node(p);
       }
+
+    protected:
+      size_type node_count;
+      link_type header;
+      Compare key_compare;
+
+      link_type& root() const {return (link_type&)header->parent;}
+      link_type& leftmost() const {return (link_type&)header->left;}
+      link_type& rightmost() const {return (link_type&)header->right;}
+
+      static link_type& left(link_type x) {return (link_type&)(x->left);}
+      static link_type& right(link_type x) {return (link_type&)(x->right);}
+      static link_type& parent(link_type x) {return (link_type&)(x->parent);}
+      static reference value(link_type x) {return x->value_field;}
+      static const Key& key(link_type x) {return KeyOfValue()(value(x));}
+      static color_type& color(link_type x) {return (color_type&)(x->color);}
+
+      static link_type& left(base_ptr x) {return (link_type&)(x->left);}
+      static link_type& right(base_ptr x) {return (link_type&)(x->right);}
+      static link_type& parent(base_ptr x) {return (link_type&)(x->parent);}
+      static reference value(base_ptr x) {return ((link_type)x)->value_field;}
+      static const Key& key(base_ptr x) {return KeyOfValue()(value(link_type(x)));}
+      static color_type& color(base_ptr x) {return (color_type&)(link_type(x)->color);}
+
+      static link_type minimum(link_type x)
+      {
+        return (link_type) __rb_tree_node_base::minimum(x);
+      }
+
+      static link_type maximum(link_type x)
+      {
+        return (link_type) __rb_tree_node_base::maximum(x);
+      }
+
+    public:
+      typedef __rb_tree_iterator<value_type, reference, pointer> iterator;
+
+    private:
+      iterator __insert(base_ptr x, base_ptr y, const value_type &v);
+      link_type __copy(link_type x, link_type p);
+      void __erase(link_type x);
+      void init()
+      {
+        header = get_node();
+        color(header) = __rb_tree_red;
+        root() = 0;
+        leftmost() = header;
+        rightmost() = header;
+      }
+
+    public:
+      rb_tree(const Compare &comp = Compare())
+      :node_count(0), key_compare(comp)
+      {
+        init();
+      }
+
+      ~rb_tree()
+      {
+        //clear();
+        put_node(header);
+      }
+
+      rb_tree<Key, Value, KeyOfValue, Compare, Alloc>& operator=(
+          const rb_tree<Key, Value, KeyOfValue, Compare, Alloc> &x);
+
+    public:
+      Compare key_comp() const {return key_compare;}
+      iterator begin() {return leftmost();}
+      iterator end() {return header;}
+      bool empty() const {return node_count == 0;}
+      size_type size() const {return node_count;}
+      size_type max_size() const {return size_type(-1);}
+
+    public:
+      // TODO: will be changed to mystl::pair
+      std::pair<iterator, bool> insert_unique(const value_type &x);
+      iterator insert_equal(const value_type &x);
   };
 
+  template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
+  typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator
+  rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::insert_equal(const Value &v)
+  {
+    link_type y = header;
+    link_type x = root();
+    while(x != 0)
+    {
+      y = x;
+      x = key_compare(KeyOfValue()(v), key(x)) ? left(x) : right(x);
+    }
+    return __insert(x, y, v);
+  }
+
+  template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
+  // TODO: will be changed to mystl::pair
+  std::pair<typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator, bool>
+  rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::insert_unique(const Value &v)
+  {
+    link_type y = header;
+    link_type x = root();
+    bool comp = true;
+    while(x != 0)
+    {
+      y = x;
+      comp = key_compare(KeyOfValue()(v), key(x));
+      x = comp ? left(x) : right(x);
+    }
+    iterator j = iterator(y);
+    if(comp)
+    {
+      //TODO: will be changed to mystl::pair
+      if(j == begin()) return std::pair<iterator, bool>(__insert(x, y, v), true);
+      else --j;
+    }
+    if(key_compare(key(j.node), KeyOfValue()(v)))
+    {
+      //TODO: will be changed to mystl::pair
+      return std::pair<iterator, bool>(__insert(x, y, v), true);
+    }
+    //TODO will be changed to mystl::pair
+    return std::pair<iterator, bool>(j, false);
+  }
+
+  template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
+  typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator
+  rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::
+  __insert(base_ptr x_, base_ptr y_, const Value &v)
+  {
+    link_type x = (link_type) x_;
+    link_type y = (link_type) y_;
+    link_type z;
+
+    if(y == header || x != 0 || key_compare(KeyOfValue()(v), key(y)))
+    {
+      z = create_node(v);
+      left(y) = z;
+      if(y == header)
+      {
+        root() = z;
+        rightmost() = z;
+      }
+      else if (y == leftmost())
+      {
+        leftmost() = z;
+      }
+    }
+    else
+    {
+      z = create_node(v);
+      right(y) = z;
+      if(y == rightmost())
+      {
+        rightmost() = z;
+      }
+    }
+    parent(z) = y;
+    left(z) = 0;
+    right(z) = 0;
+    __rb_tree_rebalance(z, header->parent);
+    ++node_count;
+    return iterator(z);
+  }
+
+  inline void __rb_tree_rebalane(__rb_tree_node_base *x, __rb_tree_node_base *root)
+  {
+  }
 } // end of namespace mystl
 
 #endif
