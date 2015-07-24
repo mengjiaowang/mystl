@@ -130,7 +130,7 @@ namespace mystl
   template <class Value, class Ref, class Ptr>
   struct __rb_tree_iterator: public __rb_tree_base_iterator
   {
-    typedef Value valye_type;
+    typedef Value value_type;
     typedef Ref reference;
     typedef Ptr pointer;
     typedef __rb_tree_iterator<Value, Value&, Value*> iterator;
@@ -159,6 +159,109 @@ namespace mystl
       return tmp;
     }
   };
+
+  inline bool operator==(const __rb_tree_base_iterator &x,
+      const __rb_tree_base_iterator &y)
+  {
+    return x.node == y.node;
+  }
+
+  inline bool operator!=(const __rb_tree_base_iterator &x,
+      const __rb_tree_base_iterator &y)
+  {
+    return x.node != y.node;
+  }
+
+  inline void __rb_tree_rotate_left(__rb_tree_node_base *x,
+      __rb_tree_node_base *&root)
+  {
+    __rb_tree_node_base *y = x->right;
+    x->right = y->left;
+    if(y->left != 0)
+      y->left->parent = x;
+    y->parent = x->parent;
+    if(x == root)
+      root = y;
+    else if(x == x->parent->left)
+      x->parent->left = y;
+    else
+      x->parent->right = y;
+    y->left = x;
+    x->parent = y;
+    root->parent->parent = root;
+  }
+
+  inline void __rb_tree_rotate_right(__rb_tree_node_base *x,
+      __rb_tree_node_base *&root)
+  {
+    __rb_tree_node_base *y = x->left;
+    x->left = y->right;
+    if(y->right != 0)
+      y->right->parent = x;
+    y->parent = x->parent;
+    if(x == root)
+      root = y;
+    else if(x == x->parent->right)
+      x->parent->right = y;
+    else
+      x->parent->left = y;
+    y->right = x;
+    x->parent = y;
+    root->parent->parent = root;
+  }
+
+  inline void __rb_tree_rebalance(__rb_tree_node_base *x, __rb_tree_node_base *root)
+  {
+    x->color = __rb_tree_red;
+    while(x != root && x->parent->color == __rb_tree_red)
+    {
+      if(x->parent == x->parent->parent->left)
+      {
+        __rb_tree_node_base *y = x->parent->parent->right;
+        if(y && y->color == __rb_tree_red)
+        {
+          x->parent->color = __rb_tree_black;
+          y->color = __rb_tree_black;
+          x->parent->parent->color = __rb_tree_red;
+          x = x->parent->parent;
+        }
+        else
+        {
+          if(x == x->parent->right)
+          {
+            x = x->parent;
+            __rb_tree_rotate_left(x, root);
+          }
+          x->parent->color = __rb_tree_black;
+          x->parent->parent->color = __rb_tree_red;
+          __rb_tree_rotate_right(x->parent->parent, root);
+        }
+      }
+      else
+      {
+        __rb_tree_node_base *y = x->parent->parent->left;
+        if(y && y->color == __rb_tree_red)
+        {
+          x->parent->color = __rb_tree_black;
+          y->color = __rb_tree_black;
+          x->parent->parent->color = __rb_tree_red;
+          x = x->parent->parent;
+        }
+        else
+        {
+          if(x == x->parent->left)
+          {
+            x = x->parent;
+            __rb_tree_rotate_right(x, root);
+          }
+          x->parent->color = __rb_tree_black;
+          x->parent->parent->color = __rb_tree_red;
+          __rb_tree_rotate_left(x->parent->parent, root);
+        }
+      }
+    }
+    root->color = __rb_tree_black;
+  }
 
   template <class Key, class Value, class KeyOfValue, class Compare, class Alloc = alloc>
   class rb_tree
@@ -250,6 +353,7 @@ namespace mystl
 
     public:
       typedef __rb_tree_iterator<value_type, reference, pointer> iterator;
+      typedef __rb_tree_iterator<value_type, const_reference, const_pointer> const_iterator;
 
     private:
       iterator __insert(base_ptr x, base_ptr y, const value_type &v);
@@ -283,7 +387,9 @@ namespace mystl
     public:
       Compare key_comp() const {return key_compare;}
       iterator begin() {return leftmost();}
+      const_iterator begin() const {return leftmost();}
       iterator end() {return header;}
+      const_iterator end() const {return header;}
       bool empty() const {return node_count == 0;}
       size_type size() const {return node_count;}
       size_type max_size() const {return size_type(-1);}
@@ -292,6 +398,9 @@ namespace mystl
       // TODO: will be changed to mystl::pair
       std::pair<iterator, bool> insert_unique(const value_type &x);
       iterator insert_equal(const value_type &x);
+
+    public:
+      bool __rb_verify() const;
   };
 
   template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
@@ -378,9 +487,39 @@ namespace mystl
     return iterator(z);
   }
 
-  inline void __rb_tree_rebalane(__rb_tree_node_base *x, __rb_tree_node_base *root)
+  template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
+  bool rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::__rb_verify() const
   {
-  }
+    if(node_count == 0 || begin() == end())
+    {
+      return node_count == 0 && begin() == end() &&
+        header->left == header && header->right == header;
+    }
+    //int len = __black_count(leftmost(), root());
+    for(const_iterator it = begin(); it != end(); ++it)
+    {
+      link_type x = (link_type) it.node;
+      link_type L = left(x);
+      link_type R = right(x);
+
+      if(x->color == __rb_tree_red)
+      {
+        if((L && L->color == __rb_tree_red) || (R && R->color == __rb_tree_red))
+          return false;
+      }
+
+      if(L && key_compare(key(x), key(L))) return false;
+      if(R && key_compare(key(R), key(x))) return false;
+
+      //if(!L && !R && __black_count(x, root()) != len) return false;
+    }
+
+    if(leftmost() != __rb_tree_node_base::minimum(root())) return false;
+    if(rightmost() != __rb_tree_node_base::maximum(root())) return false;
+
+    return true;
+   }
+
 } // end of namespace mystl
 
 #endif
