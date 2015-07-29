@@ -393,6 +393,7 @@ namespace mystl
       bool empty() const {return node_count == 0;}
       size_type size() const {return node_count;}
       size_type max_size() const {return size_type(-1);}
+      iterator find(const Key &k);
 
     public:
       // TODO: will be changed to mystl::pair
@@ -518,7 +519,29 @@ namespace mystl
     if(rightmost() != __rb_tree_node_base::maximum(root())) return false;
 
     return true;
-   }
+  }
+
+  template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
+  typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator
+  rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::find(const Key &k)
+  {
+    link_type y = header;
+    link_type x = root();
+    while(x != 0)
+    {
+      if(!key_compare(key(x),k))
+      {
+        y = x;
+        x = left(x);
+      }
+      else
+      {
+        x = right(x);
+      }
+    }
+    iterator j = iterator(y);
+    return (j == end() || key_compare(k, key(j.node))) ? end() : j;
+  }
 
 } // end of namespace mystl
 

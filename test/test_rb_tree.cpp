@@ -45,19 +45,36 @@ int main()
   std::cout << "verified = " << tree.__rb_verify() << std::endl;
 
   // test iterator
-  /*
   mystl::rb_tree<int, int, mystl::identity<int>, std::less<int> >::iterator it;
   it = tree.begin(); std::cout << *it << std::endl;
   ++it; std::cout << *it << std::endl;
   ++it; std::cout << *it << std::endl;
   ++it; std::cout << *it << std::endl;
-  */
 
-  mystl::rb_tree<int, int, mystl::identity<int>, std::less<int> >::iterator it;
   for(it = tree.begin(); it != tree.end(); ++it)
   {
     std::cout << *it << " ";
   }
   std::cout << std::endl;
+
+  // test find
+  it = tree.find(5);
+  if(it != tree.end())
+    std::cout << "5 found in the rb_tree" << std::endl;
+  else
+    std::cout << "5 not found in the rb_tree" << std::endl;
+
+  it = tree.find(6);
+  if(it != tree.end())
+    std::cout << "6 found in the rb_tree" << std::endl;
+  else
+    std::cout << "6 not found in the rb_tree" << std::endl;
+
+  it = tree.find(14);
+  if(it != tree.end())
+    std::cout << "14 found in the rb_tree" << std::endl;
+  else
+    std::cout << "14 not found in the rb_tree" << std::endl;
+
   return 0;
 }
