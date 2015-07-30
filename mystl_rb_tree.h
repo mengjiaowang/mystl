@@ -400,6 +400,10 @@ namespace mystl
       std::pair<iterator, bool> insert_unique(const value_type &x);
       iterator insert_equal(const value_type &x);
 
+      template <class InputIterator>
+      void insert_unique(InputIterator first, InputIterator last);
+
+
     public:
       bool __rb_verify() const;
   };
@@ -446,6 +450,17 @@ namespace mystl
     }
     //TODO will be changed to mystl::pair
     return std::pair<iterator, bool>(j, false);
+  }
+
+  template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
+  template <class InputIterator>
+  void rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::insert_unique(
+      InputIterator first, InputIterator last)
+  {
+    for(; first != last; ++first)
+    {
+      insert_unique(*first);
+    }
   }
 
   template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
