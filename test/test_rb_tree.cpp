@@ -76,5 +76,16 @@ int main()
   else
     std::cout << "14 not found in the rb_tree" << std::endl;
 
+  // test erase
+  it = tree.begin();
+  tree.erase(it);
+  std::cout << "the size of the tree is: " << tree.size() << std::endl;
+  std::cout << "verified = " << tree.__rb_verify() << std::endl;
+
+  // test clear
+  tree.clear();
+  std::cout << "the size of the tree is: " << tree.size() << std::endl;
+  std::cout << "verified = " << tree.__rb_verify() << std::endl;
+
   return 0;
 }

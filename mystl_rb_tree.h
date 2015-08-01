@@ -263,6 +263,146 @@ namespace mystl
     root->color = __rb_tree_black;
   }
 
+  inline __rb_tree_node_base* __rb_tree_rebalance_for_erase(
+      __rb_tree_node_base* z,
+      __rb_tree_node_base*& root,
+      __rb_tree_node_base*& leftmost,
+      __rb_tree_node_base*& rightmost)
+  {
+    __rb_tree_node_base* y = z;
+    __rb_tree_node_base* x = 0;
+    __rb_tree_node_base* x_parent = 0;
+
+    if(y->left == 0) x = y->right;
+    else
+    {
+      if(y->right == 0) x = y->left;
+      else
+      {
+        y = y->left;
+        while(y->left != 0) y = y->left;
+        x = y->right;
+      }
+    }
+    if(y != z)
+    {
+      z->left->parent = y;
+      y->left = z->left;
+      if(y != z->right)
+      {
+        x_parent = y->parent;
+        if(x) x->parent = y->parent;
+        y->parent->left = x;
+        y->right = z->right;
+        z->right->parent = y;
+      }
+      else x_parent = y;
+      if(root == z) root = y;
+      else if(z->parent->left == z)
+        z->parent->left = y;
+      else
+        z->parent->right = y;
+      y->parent = z->parent;
+      std::swap(y->color, z->color);
+      y = z;
+    }
+    else
+    {
+      x_parent = y->parent;
+      if(x) x->parent = y->parent;
+      if(root == z) root = x;
+      else
+      {
+        if(z->parent->left == z)
+          z->parent->left = x;
+        else
+          z->parent->right = x;
+      }
+      if(leftmost == z)
+      {
+        if(z->right == 0)
+          leftmost = z->parent;
+        else
+          leftmost = __rb_tree_node_base::minimum(x);
+      }
+    }
+
+    if(y->color != __rb_tree_red)
+    {
+      while(x != root && (x == 0 || x->color == __rb_tree_black))
+      {
+        if(x == x_parent->left)
+        {
+          __rb_tree_node_base* w = x_parent->right;
+          if(w->color == __rb_tree_red)
+          {
+            w->color = __rb_tree_black;
+            x_parent->color = __rb_tree_red;
+            __rb_tree_rotate_left(x_parent, root);
+            w = x_parent->right;
+          }
+          if((w->right == 0 || w->left->color == __rb_tree_black) &&
+             (w->right == 0 || w->right->color == __rb_tree_black))
+          {
+            w->color = __rb_tree_red;
+            x = x_parent;
+            x_parent = x_parent->parent;
+          }
+          else
+          {
+            if(w->right == 0 || w->right->color == __rb_tree_black)
+            {
+              if(w->left) w->left->color = __rb_tree_black;
+                w->color = __rb_tree_red;
+              __rb_tree_rotate_right(w, root);
+              w = x_parent->right;
+            }
+            w->color = x_parent->color;
+            x_parent->color = __rb_tree_black;
+            if(w->right) w->right->color = __rb_tree_black;
+            __rb_tree_rotate_left(x_parent, root);
+            break;
+          }
+        }
+        else
+        {
+          __rb_tree_node_base* w = x_parent->left;
+          if(w->color == __rb_tree_red)
+          {
+            w->color = __rb_tree_black;
+            x_parent->color = __rb_tree_red;
+            __rb_tree_rotate_right(x_parent, root);
+            w = x_parent->left;
+          }
+          if((w->right == 0 || w->right->color == __rb_tree_black) &&
+             (w->left == 0 || w->left->color == __rb_tree_black))
+          {
+            w->color = __rb_tree_red;
+            x = x_parent;
+            x_parent = x_parent->parent;
+          }
+          else
+          {
+            if(w->left == 0 || w->left->color == __rb_tree_black)
+            {
+              if(w->right) w->right->color = __rb_tree_black;
+              w->color = __rb_tree_red;
+              __rb_tree_rotate_left(w, root);
+              w = x_parent->left;
+            }
+            w->color = x_parent->color;
+            x_parent->color = __rb_tree_black;
+            if(w->left) w->left->color = __rb_tree_black;
+            __rb_tree_rotate_right(x_parent, root);
+            break;
+          }
+        }
+      }
+      if(x) x->color = __rb_tree_black;
+    }
+    return y;
+  }
+
   template <class Key, class Value, class KeyOfValue, class Compare, class Alloc = alloc>
   class rb_tree
   {
@@ -368,6 +508,7 @@ namespace mystl
         rightmost() = header;
       }
 
+
     public:
       rb_tree(const Compare &comp = Compare())
       :node_count(0), key_compare(comp)
@@ -377,8 +518,35 @@ namespace mystl
 
       ~rb_tree()
       {
-        //clear();
+        clear();
         put_node(header);
+      }
+
+      rb_tree(const rb_tree<Key, Value, KeyOfValue, Compare, Alloc> &x)
+        :node_count(0), key_compare(x.key_compare)
+      {
+        header = get_node();
+        color(header) = __rb_tree_red;
+        if(x.root() == 0)
+        {
+          root() = 0;
+          leftmost() = header;
+          rightmost() = header;
+        }
+        else
+        {
+          try
+          {
+            root() = __copy(x.root(), header);
+            leftmost() = minimum(root());
+            rightmost() = maimum(root());
+          }
+          catch(...)
+          {
+            put_node(header);
+          }
+        }
+        node_count = x.node_count;
       }
 
       rb_tree<Key, Value, KeyOfValue, Compare, Alloc>& operator=(
@@ -403,6 +571,22 @@ namespace mystl
       template <class InputIterator>
       void insert_unique(InputIterator first, InputIterator last);
 
+      void erase(iterator position);
+      size_type erase(const key_type &x);
+      void erase(iterator first, iterator last);
+      void erase(const key_type *first, const key_type *last);
+
+      void clear()
+      {
+        if(node_count != 0)
+        {
+          __erase(root());
+          leftmost() = header;
+          root() = 0;
+          rightmost() = header;
+          node_count = 0;
+        }
+      }
 
     public:
       bool __rb_verify() const;
@@ -504,6 +688,15 @@ namespace mystl
   }
 
   template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
+  inline void rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::erase(iterator position)
+  {
+    link_type y = (link_type) __rb_tree_rebalance_for_erase(position.node,
+        header->parent, header->left, header->right);
+    destroy(y);
+    --node_count;
+  }
+
+  template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
   bool rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::__rb_verify() const
   {
     if(node_count == 0 || begin() == end())
@@ -556,6 +749,55 @@ namespace mystl
     }
     iterator j = iterator(y);
     return (j == end() || key_compare(k, key(j.node))) ? end() : j;
+  }
+
+  template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
+  typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::link_type
+  rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::__copy(link_type x, link_type p)
+  {
+    link_type top = clone_node(x);
+    top->parent = p;
+    try
+    {
+      if(x->right)
+      {
+        top->right = __copy(right(x), top);
+      }
+      p = top;
+      x = left(x);
+
+      while(x != 0)
+      {
+        link_type y = clone_node(x);
+        p->left = y;
+        y->parent = p;
+        if(x->right)
+        {
+          y->right = __copy(right(x), y);
+        }
+        p = y;
+        x = left(x);
+      }
+    }
+    catch(...)
+    {
+      __eraes(top);
+    }
+    return top;
+  }
+
+
+  template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
+  void rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::__erase(link_type x)
+  {
+    // eraes without rebalancing
+    while(x != 0)
+    {
+      __erase(right(x));
+      link_type y = left(x);
+      destroy_node(x);
+      x = y;
+    }
   }
 
 } // end of namespace mystl
