@@ -562,6 +562,7 @@ namespace mystl
       size_type size() const {return node_count;}
       size_type max_size() const {return size_type(-1);}
       iterator find(const Key &k);
+      const_iterator find(const Key &k) const;
 
     public:
       // TODO: will be changed to mystl::pair
@@ -748,6 +749,28 @@ namespace mystl
       }
     }
     iterator j = iterator(y);
+    return (j == end() || key_compare(k, key(j.node))) ? end() : j;
+  }
+
+  template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
+  typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::const_iterator
+  rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::find(const Key &k) const
+  {
+    link_type y = header;
+    link_type x = root();
+    while(x != 0)
+    {
+      if(!key_compare(key(x),k))
+      {
+        y = x;
+        x = left(x);
+      }
+      else
+      {
+        x = right(x);
+      }
+    }
+    const_iterator j = iterator(y);
     return (j == end() || key_compare(k, key(j.node))) ? end() : j;
   }
 
