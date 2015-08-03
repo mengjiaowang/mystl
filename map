@@ -31,29 +31,12 @@
  * purpose.  It is provided "as is" without express or implied warranty.
  */
 
-#ifndef MYSTL_FUNCTION_H_
-#define MYSTL_FUNCTION_H_
+#ifndef MYSTL_MAP
+#define MYSTL_MAP
 
-#include <functional>
-
-namespace mystl
-{
-  template <class T>
-  //TODO: will be changed to mystl::unary_function<T, T>
-  struct identity: public std::unary_function<T, T>
-  {
-    const T& operator()(const T& x) const {return x;}
-  };
-
-  template <class Pair>
-  struct select1st : public std::unary_function<Pair, typename Pair::first_type> {
-  const typename Pair::first_type& operator()(const Pair& x) const
-  {
-    return x.first;
-  };
-
-};
-
-} // end of namespace mystl
+#include "mystl_alloc.h"
+#include "mystl_construct.h"
+#include "mystl_uninitialized.h"
+#include "mystl_map.h"
 
 #endif
