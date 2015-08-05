@@ -37,6 +37,7 @@
 #include "mystl_function.h"
 #include "mystl_alloc.h"
 #include "mystl_rb_tree.h"
+#include "mystl_pair.h"
 
 namespace mystl
 {
@@ -47,7 +48,7 @@ namespace mystl
       typedef Key key_type;
       typedef T data_type;
       typedef T mapped_type;
-      typedef std::pair<const Key, T> value_type;
+      typedef mystl::pair<const Key, T> value_type;
       typedef Compare key_compare;
 
     class value_compare: public std::binary_function<value_type, value_type, bool>

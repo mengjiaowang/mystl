@@ -37,6 +37,7 @@
 #include "mystl_function.h"
 #include "mystl_alloc.h"
 #include "mystl_rb_tree.h"
+#include "mystl_pair.h"
 
 namespace mystl
 {
@@ -94,13 +95,12 @@ namespace mystl
       void swap(set<Key, Compare, Alloc> &x) {t.swap(x, t);}
 
       // insert and erase
-      // TODO: std:pair will be replaced by mystl::pair
-      typedef std::pair<iterator, bool> pair_iterator_bool;
+      typedef mystl::pair<iterator, bool> pair_iterator_bool;
 
-      std::pair<iterator, bool> insert(const value_type &x)
+      mystl::pair<iterator, bool> insert(const value_type &x)
       {
-        std::pair<typename rep_type::iterator, bool> p = t.insert_unique(x);
-        return std::pair<iterator, bool>(p.first, p.second);
+        mystl::pair<typename rep_type::iterator, bool> p = t.insert_unique(x);
+        return mystl::pair<iterator, bool>(p.first, p.second);
       }
 
       template<class InputIterator>

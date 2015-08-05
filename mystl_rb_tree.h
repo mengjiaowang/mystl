@@ -36,6 +36,7 @@
 
 #include "memory"
 #include "mystl_iterator.h"
+#include "mystl_pair.h"
 
 namespace mystl
 {
@@ -565,8 +566,7 @@ namespace mystl
       const_iterator find(const Key &k) const;
 
     public:
-      // TODO: will be changed to mystl::pair
-      std::pair<iterator, bool> insert_unique(const value_type &x);
+      mystl::pair<iterator, bool> insert_unique(const value_type &x);
       iterator insert_equal(const value_type &x);
 
       template <class InputIterator>
@@ -608,8 +608,7 @@ namespace mystl
   }
 
   template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
-  // TODO: will be changed to mystl::pair
-  std::pair<typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator, bool>
+  mystl::pair<typename rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::iterator, bool>
   rb_tree<Key, Value, KeyOfValue, Compare, Alloc>::insert_unique(const Value &v)
   {
     link_type y = header;
@@ -624,17 +623,14 @@ namespace mystl
     iterator j = iterator(y);
     if(comp)
     {
-      //TODO: will be changed to mystl::pair
-      if(j == begin()) return std::pair<iterator, bool>(__insert(x, y, v), true);
+      if(j == begin()) return mystl::pair<iterator, bool>(__insert(x, y, v), true);
       else --j;
     }
     if(key_compare(key(j.node), KeyOfValue()(v)))
     {
-      //TODO: will be changed to mystl::pair
-      return std::pair<iterator, bool>(__insert(x, y, v), true);
+      return mystl::pair<iterator, bool>(__insert(x, y, v), true);
     }
-    //TODO will be changed to mystl::pair
-    return std::pair<iterator, bool>(j, false);
+    return mystl::pair<iterator, bool>(j, false);
   }
 
   template <class Key, class Value, class KeyOfValue, class Compare, class Alloc>
