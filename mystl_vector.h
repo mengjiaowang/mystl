@@ -172,16 +172,49 @@ namespace mystl
       }
 
       void insert(iterator position, size_type n, const T &x);
-
       void resize(size_type new_size) { resize(new_size, T());}
       void clear() { erase(begin(), end());}
+      void reserve(size_type n)
+      {
+        if (capacity() < n)
+        {
+          const size_type old_size = size();
+          iterator tmp = allocate_and_copy(n, start, finish);
+          destroy(start, finish);
+          deallocate();
+          start = tmp;
+          finish = tmp + old_size;
+          end_of_storage = start + n;
+        }
+      }
 
+      void swap(vector<T, Alloc>& x)
+      {
+        std::swap(start, x.start);
+        std::swap(finish, x.finish);
+        std::swap(end_of_storage, x.end_of_storage);
+      }
 
     protected:
       iterator allocate_and_fill(size_type n, const T &x)
       {
         iterator result = data_allocator::allocate(n);
         mystl::uninitialized_fill_n(result, n, x);
+        return result;
+      }
+
+      iterator allocate_and_copy(size_type n, const_iterator first,
+          const_iterator last)
+      {
+        iterator result = data_allocator::allocate(n);
+        try
+        {
+          mystl::uninitialized_copy(first, last, result);
+        }
+        catch(...)
+        {
+          data_allocator::deallocate(result, n);
+        }
         return result;
       }
   };

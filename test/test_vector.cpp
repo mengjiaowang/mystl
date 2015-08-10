@@ -35,14 +35,25 @@ int main()
   std::cout << "size = " << v.size() << " capacity = " << v.capacity() << std::endl;
   std::cout << "empty = " << v.empty() << std::endl;
 
+  // test reserve
+  v.reserve(10);
+  std::cout << "size = " << v.size() << " capacity = " << v.capacity() << std::endl;
+
   // test compare
-  mystl::vector<int> v1(2,9), v2(2,10);
+  mystl::vector<int> v1(3,9), v2(2,10);
   std::cout << "v1 == v2: " << (v1 == v2) << std::endl;
   std::cout << "v1 != v2: " << (v1 != v2) << std::endl;
   std::cout << "v1 < v2: " << (v1 < v2) << std::endl;
   std::cout << "v1 > v2: " << (v1 > v2) << std::endl;
   std::cout << "v1 <= v2: " << (v1 <= v2) << std::endl;
   std::cout << "v1 >= v2: " << (v1 >= v2) << std::endl;
+
+  // test swap
+  std::cout << "size = " << v1.size() << " capacity = " << v1.capacity() << std::endl;
+  std::cout << "size = " << v2.size() << " capacity = " << v2.capacity() << std::endl;
+  v1.swap(v2);
+  std::cout << "size = " << v1.size() << " capacity = " << v1.capacity() << std::endl;
+  std::cout << "size = " << v2.size() << " capacity = " << v2.capacity() << std::endl;
 
   return 0;
 }
