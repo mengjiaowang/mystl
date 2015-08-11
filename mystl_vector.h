@@ -239,7 +239,7 @@ namespace mystl
         }
         else
         {
-          mystl::uninitialized_fill_n(finish - n, n - elems_after, x_copy);
+          mystl::uninitialized_fill_n(finish, n - elems_after, x_copy);
           finish += n - elems_after;
           mystl::uninitialized_copy(position, old_finish, finish);
           finish += elems_after;

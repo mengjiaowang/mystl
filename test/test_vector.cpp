@@ -37,7 +37,22 @@ int main()
 
   // test reserve
   v.reserve(10);
-  std::cout << "size = " << v.size() << " capacity = " << v.capacity() << std::endl;
+  v.push_back(1);
+  v.push_back(2);
+  v.push_back(3);
+  v.push_back(4);
+  std::cout << "test reserve: size = " << v.size() << " capacity = " << v.capacity() << std::endl;
+  mystl::vector<int>::iterator iter = v.begin();
+  for(iter = v.begin(); iter != v.end(); ++iter)
+  {
+    std::cout << "value: " << (*iter) << std::endl;
+  }
+  v.insert(v.end(), 3, 5);
+  std::cout << "test reserve: size = " << v.size() << " capacity = " << v.capacity() << std::endl;
+  for(iter = v.begin(); iter != v.end(); ++iter)
+  {
+    std::cout << "value: " << (*iter) << std::endl;
+  }
 
   // test compare
   mystl::vector<int> v1(3,9), v2(2,10);
