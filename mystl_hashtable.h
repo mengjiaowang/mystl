@@ -104,12 +104,12 @@ namespace mystl
     if(!cur)
     {
       size_type bucket = ht->bkt_num(old->val);
-      while(!cur && ++bucket < ht->bucket.size())
+      while(!cur && ++bucket < ht->buckets.size())
       {
         cur = ht->buckets[bucket];
       }
-      return *this;
     }
+    return *this;
   }
 
   template <class Value, class Key, class HashFcn,
@@ -196,6 +196,12 @@ namespace mystl
         initialize_buckets(n);
       }
 
+      hashtable(const hashtable& ht)
+      :hash(ht.hash), equals(ht.equals), get_key(ht.get_key), num_elements(0)
+      {
+        copy_from(ht);
+      }
+
       ~hashtable(){clear();}
       void clear();
 
@@ -255,6 +261,9 @@ namespace mystl
       }
 
       mystl::pair<iterator, bool> insert_unique_noresize(const value_type &obj);
+      iterator insert_equal_noresize(const value_type &obj);
+
+      void copy_from(const hashtable<Value, Key, HashFcn, ExtractKey, EqualKey, Alloc> &ht);
 
     public:
       // insert and erase operations
@@ -264,7 +273,74 @@ namespace mystl
         return insert_unique_noresize(obj);
       }
 
+      iterator insert_equal(const value_type &obj)
+      {
+        resize(num_elements + 1);
+        return insert_equal_noresize(obj);
+      }
+
       void resize(size_type num_elements_hint);
+
+    public:
+      // find and count
+      iterator find(const key_type &key)
+      {
+        size_type n = bkt_num_key(key);
+        node *first;
+        for(first = buckets[n];
+            first && !equals(get_key(first->val),key);
+            first = first->next)
+        {
+        }
+        return iterator(first, this);
+      }
+
+      size_type count(const key_type &key)
+      {
+        const size_type n = bkt_num_key(key);
+        size_type result = 0;
+        for(const node * cur = buckets[n]; cur; cur = cur->next)
+        {
+          if(equals(get_key(cur->val),key)) ++ result;
+        }
+        return result;
+      }
+
+    public:
+      // data access
+      iterator begin()
+      {
+        for (size_type n = 0; n < buckets.size(); ++n)
+        {
+          if(buckets[n])
+          {
+            return iterator(buckets[n], this);
+          }
+        }
+        return end();
+      }
+
+      iterator end()
+      {
+        return iterator(0, this);
+      }
+
+      const_iterator begin() const
+      {
+        for (size_type n = 0; n < buckets.size(); ++n)
+        {
+          if(buckets[n])
+          {
+            return const_iterator(buckets[n], this);
+          }
+        }
+        return end();
+      }
+
+      const_iterator end() const
+      {
+        return const_iterator(0, this);
+      }
   };
 
   template <class V, class K, class HF, class Ex, class Eq, class A>
@@ -330,6 +406,30 @@ namespace mystl
   }
 
   template <class V, class K, class HF, class Ex, class Eq, class A>
+  typename hashtable<V, K, HF, Ex, Eq, A>::iterator
+  hashtable<V, K, HF, Ex, Eq, A>::insert_equal_noresize(const value_type &obj)
+  {
+    const size_type n = bkt_num(obj);
+    node *first = buckets[n];
+    for(node *cur = first; cur; cur = cur->next)
+    {
+      if(equals(get_key(cur->val), get_key(obj)))
+      {
+        node *tmp = new_node(obj);
+        tmp->next = cur->next;
+        cur->next = tmp;
+        ++num_elements;
+        return iterator(tmp, this);
+      }
+    }
+    node *tmp = new_node(obj);
+    tmp->next = first;
+    buckets[n] = tmp;
+    ++num_elements;
+    return iterator(tmp, this);
+  }
+
+  template <class V, class K, class HF, class Ex, class Eq, class A>
   void hashtable<V, K, HF, Ex, Eq, A>::clear()
   {
     for (size_type i = 0; i < buckets.size(); ++i)
@@ -344,6 +444,37 @@ namespace mystl
       buckets[i] = 0;
     }
     num_elements = 0;
+  }
+
+  template <class V, class K, class HF, class Ex, class Eq, class A>
+  void hashtable<V, K, HF, Ex, Eq, A>::copy_from(const hashtable<V, K, HF, Ex, Eq, A> &ht)
+  {
+    buckets.clear();
+    buckets.reserve(ht.buckets.size());
+    buckets.insert(buckets.end(), ht.buckets.size(), (node*) 0);
+    try
+    {
+      for(size_type i = 0; i < ht.buckets.size(); ++i)
+      {
+        const node *cur = ht.buckets[i];
+        if(cur)
+        {
+          node *copy = new_node(cur->val);
+          buckets[i] = copy;
+          for(node *next = cur->next; next; cur = next, next = cur->next)
+          {
+            copy->next = new_node(next->val);
+            copy = copy->next;
+          }
+        }
+      }
+      num_elements = ht.num_elements;
+    }
+    catch(...)
+    {
+      // roll back
+      clear();
+    }
   }
 
 } // end of namespace mystl
