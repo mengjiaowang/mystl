@@ -89,6 +89,7 @@ namespace mystl
       }
       bool empty()const {return begin()==end();}
       reference operator[](size_type n){return *(begin()+n);}
+      const_reference operator[](size_type n) const {return *(begin() + n);}
 
       vector(): start(0), finish(0), end_of_storage(0){}
       vector(size_type n, const T &value){fill_initialize(n, value);}
