@@ -1,19 +1,20 @@
 #include "../mystl_hashtable.h"
 #include "../mystl_function.h"
+#include "../mystl_hash_fun.h"
 #include <iostream>
 
 int main()
 {
   // test constructor
-  mystl::hashtable<int, int, std::hash<int>, mystl::identity<int>,
-    std::equal_to<int> > test_ht(5, std::hash<int>(), std::equal_to<int>());
+  mystl::hashtable<int, int, mystl::hash<int>, mystl::identity<int>,
+    std::equal_to<int> > test_ht(5, mystl::hash<int>(), std::equal_to<int>());
   // test insert_unique
   test_ht.insert_unique(1);
   test_ht.insert_unique(63);
   test_ht.insert_unique(108);
 
   // test iterator
-  mystl::hashtable<int, int, std::hash<int>, mystl::identity<int>,
+  mystl::hashtable<int, int, mystl::hash<int>, mystl::identity<int>,
     std::equal_to<int> >::iterator iter;
   for(iter = test_ht.begin(); iter != test_ht.end(); ++iter)
   {
@@ -58,7 +59,7 @@ int main()
   std::cout << std::endl;
 
   // test copy constructor
-  mystl::hashtable<int, int, std::hash<int>, mystl::identity<int>,
+  mystl::hashtable<int, int, mystl::hash<int>, mystl::identity<int>,
     std::equal_to<int> > test_ht_cpy(test_ht);
   for(iter = test_ht.begin(); iter != test_ht.end(); ++iter)
   {

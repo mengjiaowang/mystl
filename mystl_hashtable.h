@@ -38,6 +38,7 @@
 #include "mystl_construct.h"
 #include "mystl_uninitialized.h"
 #include "mystl_function.h"
+#include "mystl_hash_fun.h"
 #include "mystl_vector.h"
 #include "mystl_pair.h"
 
