@@ -33,6 +33,15 @@ int main()
   }
   std::cout << std::endl;
 
+  // test erase
+  test_ht.erase(63);
+  std::cout << "test erase" << std::endl;
+  for(iter = test_ht.begin(); iter != test_ht.end(); ++iter)
+  {
+    std::cout << "value: " << (*iter) << std::endl;
+  }
+  std::cout << std::endl;
+
   // test find
   iter = test_ht.find(1);
   std::cout << "found = " << (iter != test_ht.end()) << std::endl;

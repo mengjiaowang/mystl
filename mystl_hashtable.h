@@ -279,6 +279,10 @@ namespace mystl
         return insert_equal_noresize(obj);
       }
 
+      size_type erase(const key_type& key);
+      void erase(const iterator& it);
+      void erase(iterator first, iterator last);
+
       void resize(size_type num_elements_hint);
 
     public:
@@ -444,6 +448,79 @@ namespace mystl
       buckets[i] = 0;
     }
     num_elements = 0;
+  }
+
+  template <class V, class K, class HF, class Ex, class Eq, class A>
+  typename hashtable<V, K, HF, Ex, Eq, A>::size_type
+  hashtable<V, K, HF, Ex, Eq, A>::erase(const key_type& key)
+  {
+    const size_type n = bkt_num_key(key);
+    node* first = buckets[n];
+    size_type erased = 0;
+    if(first)
+    {
+      node *cur = first;
+      node *next = cur->next;
+      while(next)
+      {
+        if(equals(get_key(next->val), key))
+        {
+          cur->next = next->next;
+          delete_node(next);
+          next = cur->next;
+          ++erased;
+          --num_elements;
+        }
+        else
+        {
+          cur = next;
+          next = cur->next;
+        }
+      }
+      if(equals(get_key(first->val), key))
+      {
+        buckets[n] = first->next;
+        delete_node(first);
+        ++erased;
+        --num_elements;
+      }
+    }
+    return erased;
+  }
+
+  template <class V, class K, class HF, class Ex, class Eq, class A>
+  void hashtable<V, K, HF, Ex, Eq, A>::erase(const iterator& it)
+  {
+    if(node *const p = it.cur)
+    {
+      const size_type n = bkt_num(p->val);
+      node *cur = buckets[n];
+      if(cur == p)
+      {
+        buckets[n] = cur->next;
+        delete_node(cur);
+        --num_elements;
+      }
+      else
+      {
+        node *next = cur->next;
+        while(next)
+        {
+          if(next == p)
+          {
+            cur->next = next->next;
+            delete_node(next);
+            --num_elements;
+            break;
+          }
+          else
+          {
+            cur = next;
+            next = cur->next;
+          }
+        }
+      }
+    }
   }
 
   template <class V, class K, class HF, class Ex, class Eq, class A>
