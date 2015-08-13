@@ -40,4 +40,6 @@
 #   define __STL_NULL_TMPL_ARGS
 # endif
 
+#define __MYSTL_TEMPLATE_NULL template<>
+
 #endif

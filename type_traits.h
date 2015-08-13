@@ -34,11 +34,7 @@
 #ifndef TYPE_TRAITS_H_
 #define TYPE_TRAITS_H_
 
-#ifdef MYSTL_CONFIG_H_
 #include "mystl_config.h"
-#endif
-
-#define __MYSTL_TEMPLATE_NULL template<> // TODO: will be moved to mystl_config.h
 
 namespace mystl
 {
