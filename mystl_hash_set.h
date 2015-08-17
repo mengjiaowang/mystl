@@ -31,8 +31,8 @@
  * purpose.  It is provided "as is" without express or implied warranty.
  */
 
-#ifndef MYSTL_SET_H_
-#define MYSTL_SET_H_
+#ifndef MYSTL_HASH_SET_H_
+#define MYSTL_HASH_SET_H_
 
 #include "mystl_function.h"
 #include "mystl_alloc.h"
