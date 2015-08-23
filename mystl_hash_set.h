@@ -48,7 +48,7 @@ namespace mystl
   class hash_set
   {
     private:
-      typedef hashtable<Value, Value, HashFcn, mystl::identity<Value>, EqualKey, Alloc> ht;
+      typedef mystl::hashtable<Value, Value, HashFcn, mystl::identity<Value>, EqualKey, Alloc> ht;
       ht rep;
 
     public:

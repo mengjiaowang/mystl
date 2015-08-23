@@ -145,7 +145,7 @@ namespace mystl
     node *cur;
     hashtable *ht;
 
-    __hashtable_const_iterator(node *n, hashtable *tab): cur(n), ht(tab){}
+    __hashtable_const_iterator(const node *n, const hashtable *tab): cur(n), ht(tab){}
     __hashtable_const_iterator(){}
     __hashtable_const_iterator(const iterator& it) : cur(it.cur), ht(it.ht) {}
     reference operator*() const {return cur->val;}
@@ -361,7 +361,7 @@ namespace mystl
         return iterator(first, this);
       }
 
-      size_type count(const key_type &key)
+      size_type count(const key_type &key) const
       {
         const size_type n = bkt_num_key(key);
         size_type result = 0;
