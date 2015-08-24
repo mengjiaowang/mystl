@@ -40,19 +40,34 @@ namespace mystl
 {
   template <class T>
   //TODO: will be changed to mystl::unary_function<T, T>
+  struct multiplies : public std::binary_function<T, T, T>
+  {
+    T operator()(const T& x, const T& y) const { return x * y;}
+  };
+
+  template <class T>
+  struct plus : public std::binary_function<T, T, T> {
+    T operator()(const T& x, const T& y) const { return x + y;}
+  };
+
+  template <class T> inline T identity_element(mystl::multiplies<T>) { return T(1);}
+  template <class T> inline T identity_element(mystl::plus<T>) { return T(0);}
+
+  template <class T>
+  //TODO: will be changed to mystl::unary_function<T, T>
   struct identity: public std::unary_function<T, T>
   {
     const T& operator()(const T& x) const {return x;}
   };
 
   template <class Pair>
-  struct select1st : public std::unary_function<Pair, typename Pair::first_type> {
-  const typename Pair::first_type& operator()(const Pair& x) const
+  struct select1st : public std::unary_function<Pair, typename Pair::first_type>
   {
-    return x.first;
+    const typename Pair::first_type& operator()(const Pair& x) const
+    {
+      return x.first;
+    };
   };
-
-};
 
 } // end of namespace mystl
 
