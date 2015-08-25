@@ -40,7 +40,7 @@
 
 namespace mystl
 {
-  template <class Key, class Compare = std::less<Key>, class Alloc = mystl::alloc>
+  template <class Key, class Compare = mystl::less<Key>, class Alloc = mystl::alloc>
   class multiset
   {
     public:

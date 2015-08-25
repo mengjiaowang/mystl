@@ -80,8 +80,7 @@ namespace mystl
   }
 
   template <class T, class Sequence = mystl::vector<T>,
-            /* TODO: will be changed to mystl::less */
-            class Compare = std::less<typename Sequence::value_type> >
+            class Compare = mystl::less<typename Sequence::value_type> >
   class priority_queue
   {
     public:

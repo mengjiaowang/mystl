@@ -44,7 +44,7 @@ namespace mystl
   template <class Key,
             class T,
             class HashFcn = mystl::hash<Key>,
-            class EqualKey = std::equal_to<Key>,
+            class EqualKey = mystl::equal_to<Key>,
             class Alloc = alloc>
   class hash_map
   {

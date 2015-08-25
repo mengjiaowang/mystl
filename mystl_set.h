@@ -42,7 +42,7 @@
 namespace mystl
 {
   // will be replaced by mystl::less<Key>
-  template <class Key, class Compare = std::less<Key>, class Alloc = alloc>
+  template <class Key, class Compare = mystl::less<Key>, class Alloc = alloc>
   class set
   {
     public:

@@ -41,7 +41,7 @@
 
 namespace mystl
 {
-  template <class Key, class T, class Compare = std::less<Key>, class Alloc = alloc>
+  template <class Key, class T, class Compare = mystl::less<Key>, class Alloc = alloc>
   class multimap
   {
     public:
@@ -51,7 +51,7 @@ namespace mystl
       typedef mystl::pair<const Key, T> value_type;
       typedef Compare key_compare;
 
-    class value_compare: public std::binary_function<value_type, value_type, bool>
+    class value_compare: public mystl::binary_function<value_type, value_type, bool>
     {
       friend class multimap<Key, T, Compare, Alloc>;
       protected:

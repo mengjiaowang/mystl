@@ -41,7 +41,7 @@
 namespace mystl
 {
   template <class Value, class HashFcn = mystl::hash<Value>,
-           class EqualKey = std::equal_to<Value>, class Alloc = alloc>
+           class EqualKey = mystl::equal_to<Value>, class Alloc = alloc>
   class hash_multiset
   {
     private:
