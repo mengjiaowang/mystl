@@ -87,7 +87,7 @@ namespace mystl
 
   template <class Iterator>
   inline typename iterator_traits<Iterator>::iterator_category
-  iterator_cagetory(const Iterator&)
+  iterator_category(const Iterator&)
   {
     typedef typename iterator_traits<Iterator>::iterator_category category;
     return category();
