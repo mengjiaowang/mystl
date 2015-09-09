@@ -37,6 +37,7 @@
 #include "mystl_alloc.h"
 #include "mystl_construct.h"
 #include "mystl_uninitialized.h"
+#include "mystl_algobase.h"
 
 #include <algorithm>
 
@@ -128,8 +129,7 @@ namespace mystl
       {
         if(position + 1 != end())
         {
-          //TODO: change to mystl::copy
-          std::copy(position + 1, finish, position);
+          mystl::copy(position + 1, finish, position);
         }
         --finish;
         destroy(finish);
@@ -138,8 +138,7 @@ namespace mystl
 
       iterator erase(iterator first, iterator last)
       {
-        //TODO: change to mystl::copy
-        iterator i = std::copy(last, finish, first);
+        iterator i = mystl::copy(last, finish, first);
         destroy(i, finish);
         finish = finish - (last - first);
         return first;
@@ -191,9 +190,9 @@ namespace mystl
 
       void swap(vector<T, Alloc>& x)
       {
-        std::swap(start, x.start);
-        std::swap(finish, x.finish);
-        std::swap(end_of_storage, x.end_of_storage);
+        mystl::swap(start, x.start);
+        mystl::swap(finish, x.finish);
+        mystl::swap(end_of_storage, x.end_of_storage);
       }
 
     protected:
@@ -250,7 +249,7 @@ namespace mystl
       else // no enough space
       {
         const size_type old_size = size();
-        const size_type len = old_size + std::max(old_size, n);
+        const size_type len = old_size + mystl::max(old_size, n);
         iterator new_start = data_allocator::allocate(len);
         iterator new_finish = new_start;
         try
@@ -318,7 +317,7 @@ namespace mystl
   template <class T, class Alloc>
   inline bool operator==(const mystl::vector<T, Alloc> &x, const mystl::vector<T, Alloc> &y)
   {
-    return x.size() == y.size() && std::equal(x.begin(), x.end(), y.begin());
+    return x.size() == y.size() && mystl::equal(x.begin(), x.end(), y.begin());
   }
 
   template <class T, class Alloc>
@@ -330,7 +329,7 @@ namespace mystl
   template <class T, class Alloc>
   inline bool operator<(const vector<T, Alloc> &x, const vector<T, Alloc> &y)
   {
-    return std::lexicographical_compare(x.begin(), x.end(), y.begin(), y.end());
+    return mystl::lexicographical_compare(x.begin(), x.end(), y.begin(), y.end());
   }
 
   template <class T, class Alloc>

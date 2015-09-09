@@ -37,6 +37,7 @@
 #include "mystl_construct.h"
 #include "mystl_iterator.h"
 #include "type_traits.h"
+#include "mystl_algobase.h"
 
 // will be removed
 #include <algorithm>
@@ -88,8 +89,7 @@ namespace mystl
   inline ForwardIterator __uninitialized_copy_aux(InputIterator first,
       InputIterator last, ForwardIterator result, __true_type)
   {
-    // TODO: change to mystl::copy
-    return std::copy(first, last, result);
+    return mystl::copy(first, last, result);
   }
 
   template <class InputIterator, class ForwardIterator>
@@ -123,15 +123,14 @@ namespace mystl
   inline char *uninitialized_copy(const char *first, const char *last,
       char *result)
   {
-    //TODO: will be changed to mystl::memmove
-    std::memmove(result, first, last - first);
+    memmove(result, first, last - first);
     return result + (last - first);
   }
 
   inline wchar_t *uninitialized_copy(const wchar_t *first, const wchar_t *last,
       wchar_t *result)
   {
-    std::memmove(result, first, sizeof(wchar_t)*(last - first));
+    memmove(result, first, sizeof(wchar_t)*(last - first));
     return result + (last - first);
   }
 

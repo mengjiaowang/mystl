@@ -37,6 +37,7 @@
 #include "mystl_alloc.h"
 #include "mystl_construct.h"
 #include "mystl_uninitialized.h"
+#include "mystl_algobase.h"
 
 #include <algorithm>
 
@@ -286,8 +287,7 @@ class deque
       }
       else
       {
-        //TODO: will be changed to mystl::copy
-        std::copy(next, finish, pos);
+        mystl::copy(next, finish, pos);
         pop_back();
       }
       return start + index;
@@ -391,8 +391,7 @@ template <class T, class Alloc, size_t BufSize>
 void deque<T, Alloc, BufSize>::create_map_and_node(size_type num_elements)
 {
   size_type num_nodes = num_elements / buffer_size() + 1;
-  // TODO: will be changed to mystl::max
-  map_size = std::max(initial_map_size(), num_nodes + 2);
+  map_size = mystl::max(initial_map_size(), num_nodes + 2);
   map = map_allocator::allocate(map_size);
   map_pointer nstart = map + (map_size - num_nodes) / 2;
   map_pointer nfinish = nstart + num_nodes - 1;
@@ -487,8 +486,7 @@ void deque<T, Alloc, BufSize>::reallocate_map(size_type nodes_to_add, bool add_a
       + (add_at_front ? nodes_to_add : 0);
     if(new_nstart < start.node)
     {
-      // TODO: will be changed to mystl::copy
-      std::copy(start.node, finish.node + 1, new_nstart);
+      mystl::copy(start.node, finish.node + 1, new_nstart);
     }
     else
     {
@@ -499,12 +497,11 @@ void deque<T, Alloc, BufSize>::reallocate_map(size_type nodes_to_add, bool add_a
   else
   {
     // TODO: will be changed to mystl::max
-    size_type new_map_size = map_size + std::max(map_size, nodes_to_add) + 2;
+    size_type new_map_size = map_size + mystl::max(map_size, nodes_to_add) + 2;
     map_pointer new_map = map_allocator::allocate(new_map_size);
     new_nstart = new_map + (new_map_size - new_num_nodes) / 2
       + (add_at_front ? nodes_to_add : 0);
-    // TODO: will be changed to mystl::copy
-    std::copy(start.node, finish.node + 1, new_nstart);
+    mystl::copy(start.node, finish.node + 1, new_nstart);
     map_allocator::deallocate(map);
     map = new_map;
     map_size = new_map_size;
@@ -557,8 +554,7 @@ deque<T, Alloc, BufSize>::erase(iterator first, iterator last)
     }
     else
     {
-      //TODO: will be changed to mystl::copy
-      std::copy(last, finish, first);
+      mystl::copy(last, finish, first);
       iterator new_finish = finish - n;
       destroy(new_finish, finish);
       for(map_pointer cur = new_finish.node + 1; cur <= finish.node; ++cur)
@@ -587,8 +583,7 @@ deque<T, Alloc, BufSize>::insert_aux(iterator pos, const value_type &x)
     pos = start + index;
     iterator pos1 = pos;
     ++pos1;
-    //TODO: will be changed to mystl::copy
-    std::copy(front2, pos1, front1);
+    mystl::copy(front2, pos1, front1);
   }
   else
   {
@@ -598,7 +593,6 @@ deque<T, Alloc, BufSize>::insert_aux(iterator pos, const value_type &x)
     iterator back2 = back1;
     --back2;
     pos = start + index;
-    //TODO: will be changed to mystl::copy_backward
     std::copy_backward(pos, back2, back1);
   }
   *pos = x_copy;
