@@ -49,5 +49,12 @@ int main()
   std::cout << "lexicographical_compare: " << mystl::lexicographical_compare(b.begin(), b.end(),
       a.begin(), a.end()) << std::endl;
 
+  // test copy
+  char *chr1 = "hello";
+  char *chr2 = new char[6];
+  mystl::copy(chr1, chr1+6, chr2);
+  std::cout << "chr1: " << chr1 << std::endl << "chr2: " << chr2 << std::endl;
+  delete chr2;
+
   return 0;
 }
