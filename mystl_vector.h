@@ -39,8 +39,6 @@
 #include "mystl_uninitialized.h"
 #include "mystl_algobase.h"
 
-#include <algorithm>
-
 namespace mystl
 {
   template <class T, class Alloc = alloc>
@@ -233,9 +231,8 @@ namespace mystl
         {
           mystl::uninitialized_copy(finish - n, finish, finish);
           finish += n;
-          //TODO: change to mystl::copy_backward and mystl::fill
-          std::copy_backward(position, old_finish - n, old_finish);
-          std::fill(position, position + n, x_copy);
+          mystl::copy_backward(position, old_finish - n, old_finish);
+          mystl::fill(position, position + n, x_copy);
         }
         else
         {
@@ -243,7 +240,7 @@ namespace mystl
           finish += n - elems_after;
           mystl::uninitialized_copy(position, old_finish, finish);
           finish += elems_after;
-          std::fill(position, old_finish, x_copy);
+          mystl::fill(position, old_finish, x_copy);
         }
       }
       else // no enough space
@@ -282,8 +279,7 @@ namespace mystl
       mystl::construct(finish, *(finish-1));
       ++finish;
       T x_copy = x;
-      //TODO: change to mystl::copy_backward
-      std::copy_backward(position, finish - 2, finish - 1);
+      mystl::copy_backward(position, finish - 2, finish - 1);
       *position = x_copy;
     }
     else

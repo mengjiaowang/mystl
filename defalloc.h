@@ -95,12 +95,12 @@ namespace mystl
 
       size_type init_page_size()
       {
-        return std::max(size_type(1), size_type(4096/sizeof(T)));
+        return mystl::max(size_type(1), size_type(4096/sizeof(T)));
       }
 
       size_type max_size()
       {
-        return std::max(size_type(1), size_type(UINT_MAX/sizeof(T)));
+        return mystl::max(size_type(1), size_type(UINT_MAX/sizeof(T)));
       }
   };
 

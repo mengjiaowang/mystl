@@ -39,8 +39,6 @@
 #include "mystl_uninitialized.h"
 #include "mystl_algobase.h"
 
-#include <algorithm>
-
 namespace mystl
 {
 
@@ -281,8 +279,7 @@ class deque
       difference_type index = pos - start;
       if(index < (size() >> 1))
       {
-        //TODO: will be changed to mystl::copy_backward
-        std::copy_backward(start, pos, next);
+        mystl::copy_backward(start, pos, next);
         pop_front();
       }
       else
@@ -490,13 +487,11 @@ void deque<T, Alloc, BufSize>::reallocate_map(size_type nodes_to_add, bool add_a
     }
     else
     {
-      // TODO: will be changed to mystl::copy_backward
-      std::copy_backward(start.node, finish.node + 1, new_nstart + old_num_nodes);
+      mystl::copy_backward(start.node, finish.node + 1, new_nstart + old_num_nodes);
     }
   }
   else
   {
-    // TODO: will be changed to mystl::max
     size_type new_map_size = map_size + mystl::max(map_size, nodes_to_add) + 2;
     map_pointer new_map = map_allocator::allocate(new_map_size);
     new_nstart = new_map + (new_map_size - new_num_nodes) / 2
@@ -542,8 +537,7 @@ deque<T, Alloc, BufSize>::erase(iterator first, iterator last)
     difference_type elems_before = first - start;
     if(elems_before < (size() - n) / 2)
     {
-      //TODO: will be changed to mystl::copy_backward
-      std::copy_backward(start, first, last);
+      mystl::copy_backward(start, first, last);
       iterator new_start = start + n;
       mystl::destroy(start, new_start);
       for(map_pointer cur = start.node; cur < new_start.node; ++cur)
@@ -593,7 +587,7 @@ deque<T, Alloc, BufSize>::insert_aux(iterator pos, const value_type &x)
     iterator back2 = back1;
     --back2;
     pos = start + index;
-    std::copy_backward(pos, back2, back1);
+    mystl::copy_backward(pos, back2, back1);
   }
   *pos = x_copy;
   return pos;

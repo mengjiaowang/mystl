@@ -39,10 +39,6 @@
 #include "type_traits.h"
 #include "mystl_algobase.h"
 
-// will be removed
-#include <algorithm>
-#include <cstring>
-
 namespace mystl
 {
   // uninitialized_fill_n
@@ -51,8 +47,7 @@ namespace mystl
   __uninitialized_fill_n_aux(ForwardIterator first, Size n,
       const T &x, __true_type)
   {
-    //TODO:change to mystl::fill_n
-    return std::fill_n(first, n, x);
+    return mystl::fill_n(first, n, x);
   }
 
   template <class ForwardIterator, class Size, class T>
@@ -140,7 +135,7 @@ namespace mystl
       ForwardIterator last, const T &x, __true_type)
   {
     // TODO: will be changed to mystl::fill
-    std::fill(first, last, x);
+    mystl::fill(first, last, x);
   }
 
   template <class ForwardIterator, class T>
