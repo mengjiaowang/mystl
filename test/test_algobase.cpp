@@ -50,11 +50,15 @@ int main()
       a.begin(), a.end()) << std::endl;
 
   // test copy
-  char *chr1 = "hello";
-  char *chr2 = new char[6];
+  char chr1[6] = "hello";
+  char chr2[6] = "xxxxx";
   mystl::copy(chr1, chr1+6, chr2);
   std::cout << "chr1: " << chr1 << std::endl << "chr2: " << chr2 << std::endl;
-  delete chr2;
+
+  // test copy_backward
+  char chr3[6] = "xxxxx";
+  mystl::copy_backward(chr1, chr1+6, chr3+6);
+  std::cout << "chr1: " << chr1 << std::endl << "chr3: " << chr3 << std::endl;
 
   return 0;
 }
