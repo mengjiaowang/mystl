@@ -35,10 +35,135 @@
 #define MYSTL_ALGO_H_
 
 #include "mystl_algobase.h"
+#include "mystl_heap.h"
 #include "set"
 
 namespace mystl
 {
+
+  template <class T>
+  inline const T& __median(const T&a, const T&b, const T&c)
+  {
+    if(a < b)
+    {
+      if(b < c) return b;
+      else if(a < c) return c;
+      else return a;
+    }
+    else if(a < c) return a;
+    else if(b < c) return c;
+    else return b;
+  }
+
+  template <class T, class Compare>
+  inline const T& __median(const T&a, const T&b, const T&c, Compare comp)
+  {
+    if(comp(a, b))
+    {
+      if(comp(b, c)) return b;
+      else if(comp(a, c)) return c;
+      else return a;
+    }
+    else if(comp(a, c)) return a;
+    else if(comp(b, c)) return c;
+    else return b;
+  }
+
+  template <class InputIterator, class Function>
+  Function for_each(InputIterator first, InputIterator last, Function f)
+  {
+    for(; first != last; ++first)
+    {
+      f(*first);
+    }
+    return f;
+  }
+
+  template <class InputIterator, class T>
+  InputIterator find(InputIterator first, InputIterator last, const T& value)
+  {
+    while(first != last && *first != value) ++first;
+    return first;
+  }
+
+  template <class InputIterator, class Predicate>
+  InputIterator find_if(InputIterator first, InputIterator last, Predicate pred)
+  {
+    while(first != last && pred(*first)) ++first;
+    return first;
+  }
+
+  template <class ForwardIterator>
+  ForwardIterator adjacent_find(ForwardIterator first, ForwardIterator last)
+  {
+    if(first == last) return last;
+    ForwardIterator next = first;
+    while(++next != last)
+    {
+      if(*first == *next) return first;
+    }
+    return last;
+  }
+
+  template <class ForwardIterator, class BinaryPredicate>
+  ForwardIterator adjacent_find(ForwardIterator first, ForwardIterator last,
+      BinaryPredicate binary_pred)
+  {
+    if(first == last) return last;
+    ForwardIterator next = first;
+    while(++next != last)
+    {
+      if(binary_pred(*first, *next)) return first;
+    }
+    return last;
+  }
+
+  template <class InputIterator, class T, class Size>
+  void count(InputIterator first, InputIterator last, const T& value, Size &n)
+  {
+    for(; first != last; ++first)
+    {
+      if(*first == value) ++n;
+    }
+  }
+
+  template <class InputIterator, class Predicate, class Size>
+  void count_if(InputIterator first, InputIterator last, Predicate pred, Size &n)
+  {
+    for(; first != last; ++first)
+    {
+      if(pred(*first, value)) ++n;
+    }
+  }
+
+#ifdef __STL_CLASS_PARTIAL_SPECIALIZATION
+
+  template <class InputIterator, class T>
+  typename mystl::iterator_traits<InputIterator>::difference_type
+  count(InputIterator first, InputIterator last, const T& value)
+  {
+    typename mystl::iterator_traits<InputIterator>::difference_type n = 0;
+    for(; first != last; ++first)
+    {
+      if(*first == value) ++n;
+    }
+    return n;
+  }
+
+  template <class InputIterator, class Predicate>
+  typename mystl::iterator_traits<InputIterator>::difference_type
+  count_if(InputIterator first, InputIterator last, Predicate pred)
+  {
+    typename mystl::iterator_traits<InputIterator>::difference_type n = 0;
+    for(; first != last; ++first)
+    {
+      if(pred(*first, value)) ++n;
+    }
+    return n;
+  }
+
+#endif /* __STL_CLASS_PARTIAL_SPECIALIZATION */
+
   template <class InputIterator1, class InputIterator2, class OutputIterator>
   OutputIterator set_union(InputIterator1 first1, InputIterator1 last1,
       InputIterator2 first2, InputIterator2 last2, OutputIterator result)
