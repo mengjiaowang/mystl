@@ -304,7 +304,7 @@ namespace mystl
       else
         z->parent->right = y;
       y->parent = z->parent;
-      std::swap(y->color, z->color);
+      mystl::swap(y->color, z->color);
       y = z;
     }
     else
