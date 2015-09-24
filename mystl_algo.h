@@ -132,7 +132,7 @@ namespace mystl
   {
     for(; first != last; ++first)
     {
-      if(pred(*first, value)) ++n;
+      if(pred(*first)) ++n;
     }
   }
 
@@ -163,6 +163,144 @@ namespace mystl
   }
 
 #endif /* __STL_CLASS_PARTIAL_SPECIALIZATION */
+
+  template <class ForwardIterator, class Generator>
+  void generate(ForwardIterator first, ForwardIterator last, Generator gen)
+  {
+    for(; first != last; ++first)
+    {
+      *first = gen();
+    }
+  }
+
+  template <class OutputIterator, class Size, class Generator>
+  OutputIterator generate_n(OutputIterator first, Size n, Generator gen)
+  {
+    for(; n > 0; --n, ++first)
+    {
+      *first = gen();
+    }
+    return first;
+  }
+
+  template <class InputIterator1, class InputIterator2, class OutputIterator>
+  OutputIterator merge(InputIterator1 first1, InputIterator1 last1,
+      InputIterator2 first2, InputIterator2 last2, OutputIterator result)
+  {
+    while(first1 != last1 && first2 != last2)
+    {
+      if(*first2 < *first1)
+      {
+        *result = *first2;
+        ++first2;
+      }
+      else
+      {
+        *result = *first1;
+        ++first1;
+      }
+      ++result;
+    }
+    return copy(first2, last2, copy(first1, last1, result));
+  }
+
+  template <class InputIterator1, class InputIterator2, class OutputIterator,
+            class Compare>
+  OutputIterator merge(InputIterator1 first1, InputIterator1 last1,
+      InputIterator2 first2, InputIterator2 last2, OutputIterator result, Compare comp)
+  {
+    while(first1 != last1 && first2 != last2)
+    {
+      if(comp(*first2, *first1))
+      {
+        *result = *first2;
+        ++first2;
+      }
+      else
+      {
+        *result = *first1;
+        ++first1;
+      }
+      ++result;
+    }
+    return copy(first2, last2, copy(first1, last1, result));
+  }
+
+  template <class ForwardIterator>
+  ForwardIterator min_element(ForwardIterator first, ForwardIterator last)
+  {
+    if(first == last) return first;
+    ForwardIterator result = first;
+    while(++first != last)
+    {
+      if(*first < *result) result = first;
+    }
+    return result;
+  }
+
+  template <class ForwardIterator, class Compare>
+  ForwardIterator min_element(ForwardIterator first, ForwardIterator last, Compare comp)
+  {
+    if(first == last) return first;
+    ForwardIterator result = first;
+    while(++first != last)
+    {
+      if(comp(*first, *result)) result = first;
+    }
+    return result;
+  }
+
+  template <class BidirectionalIterator, class Predicate>
+  BidirectionalIterator partition(BidirectionalIterator first,
+      BidirectionalIterator last, Predicate pred)
+  {
+    while(true)
+    {
+      while(true)
+      {
+        if(first == last) return first;
+        else if(pred(*first)) ++first;
+        else break;
+      }
+      --last;
+      while(true)
+      {
+        if(first == last) return first;
+        else if(!pred(*last)) --last;
+        else break;
+      }
+      mystl::iter_swap(first, last);
+      ++first;
+    }
+  }
+
+  template <class BidirectionalIterator>
+  inline void reverse(BidirectionalIterator first, BidirectionalIterator last)
+  {
+    __reverse(first, last, iterator_category(first));
+  }
+
+  template <class BidirectionalIterator>
+  void __reverse(BidirectionalIterator first, BidirectionalIterator last, bidirectional_iterator_tag)
+  {
+    while(true)
+    {
+      if(first == last || first == --last)
+      {
+        return;
+      }
+      else
+      {
+        iter_swap(first++, last);
+      }
+    }
+  }
+
+  template <class RandomAccessIterator>
+  void __reverse(RandomAccessIterator first, RandomAccessIterator last, random_access_iterator_tag)
+  {
+    while(first < last) iter_swap(first++, --last);
+  }
 
   template <class InputIterator1, class InputIterator2, class OutputIterator>
   OutputIterator set_union(InputIterator1 first1, InputIterator1 last1,

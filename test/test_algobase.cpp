@@ -38,7 +38,7 @@ int main()
   std::cout << "equal: " << mystl::equal(b.begin(), b.end(), a.begin()) << std::endl;
 
   // test mismatch
-  mystl::pair<typename mystl::vector<int>::iterator, typename mystl::vector<int>::iterator>
+  mystl::pair<mystl::vector<int>::iterator, mystl::vector<int>::iterator>
     mismatch_result = mystl::mismatch(a.begin(), a.end(), b.begin());
   std::cout << "mismatch: " << *mismatch_result.first << " " << *mismatch_result.second
     << std::endl;
