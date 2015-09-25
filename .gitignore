@@ -1,0 +1,4 @@
+# ignore object files
+*.o
+# ignore target files
+mystl_test
