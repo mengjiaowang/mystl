@@ -36,6 +36,7 @@
 
 #include <new>
 #include "type_traits.h"
+#include "mystl_iterator.h"
 
 namespace mystl
 {
@@ -57,17 +58,17 @@ namespace mystl
     pointer->~T1();
   }
 
-  template <class ForwardIterator>
-  inline void destroy(ForwardIterator first, ForwardIterator last)
-  {
-    destroy(first, last, value_type(first));
-  }
-
   template <class ForwardIterator, class T>
-  inline void destroy(ForwardIterator first, ForwardIterator last, T*)
+  inline void __destroy(ForwardIterator first, ForwardIterator last, T*)
   {
     typedef typename __type_traits<T>::has_trivial_destructor trivial_destructor;
     __destroy_aux(first, last, trivial_destructor());
+  }
+
+  template <class ForwardIterator>
+  inline void destroy(ForwardIterator first, ForwardIterator last)
+  {
+    __destroy(first, last, value_type(first));
   }
 
   template <class ForwardIterator>
