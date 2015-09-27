@@ -3,17 +3,18 @@ CFLAGS=-c
 LDFLAGS=-lgtest
 INCLUDES=/usr/local/include/
 LIBS=/usr/local/lib/
-SOURCES=gtest_main.cpp gtest_algo.cpp
+SOURCES=gtest_main.cpp gtest_algo.cpp gtest_vector.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
 TARGET=mystl_test
+DEBUG=-g
 
 all: $(SOURCES) $(TARGET)
 
 $(TARGET): $(OBJECTS)
-	    $(CC) -L$(LIBS) $(LDFLAGS) $(OBJECTS) -o $@
+	    $(CC) $(DEBUG) -L$(LIBS) $(LDFLAGS) $(OBJECTS) -o $@
 
 .cpp.o:
-	    $(CC) $(CFLAGS) -I $(INCLUDES) $< -o $@
+	    $(CC) $(DEBUG) $(CFLAGS) -I $(INCLUDES) $< -o $@
 
 .PHONY: clean
 
