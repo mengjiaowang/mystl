@@ -377,6 +377,7 @@ namespace mystl
         *result = *first1;
         ++first1;
         ++first2;
+        ++result;
       }
     }
     return result;

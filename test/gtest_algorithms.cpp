@@ -240,20 +240,89 @@ namespace mystl_test
     EXPECT_EQ(2, m[4]);
     EXPECT_EQ(1, m[5]);
   }
-/*
-  TEST(TestAlgorithms, DISABLED_TestReserveForlist)
+
+  TEST(TestAlgorithms, TestSetUnion)
   {
-    mystl::list<int> li;
-    li.push_back(1);
-    li.push_back(2);
-    li.push_back(3);
+    int ia1[6] = {1, 3, 5, 7, 9, 11};
+    int ia2[6] = {1, 2, 3, 5, 8, 13};
+    int ia3[9] = {1, 2, 3, 5, 7, 8, 9, 11, 13};
 
-    mystl::reverse(li.begin(), li.end());
-    mystl::list<int>::iterator iter = li.begin();
+    mystl::set<int> S1(ia1, ia1+6);
+    mystl::set<int> S2(ia2, ia2+6);
+    mystl::vector<int> S3(9);
 
-    EXPECT_EQ(3, *iter); ++iter;
-    EXPECT_EQ(2, *iter); ++iter;
-    EXPECT_EQ(1, *iter);
+    // test set_union
+    mystl::set_union(S1.begin(), S1.end(), S2.begin(), S2.end(), S3.begin());
+
+    mystl::vector<int>::iterator iter = S3.begin();
+    int index = 0;
+    for(iter = S3.begin(); iter !=S3.end(); ++iter)
+    {
+      EXPECT_EQ(ia3[index++], *iter);
+    }
   }
-*/
+
+  TEST(TestAlgorithms, TestSetIntersection)
+  {
+    int ia1[6] = {1, 3, 5, 7, 9, 11};
+    int ia2[6] = {1, 2, 3, 5, 8, 13};
+    int ia3[3] = {1, 3, 5};
+
+    mystl::set<int> S1(ia1, ia1+6);
+    mystl::set<int> S2(ia2, ia2+6);
+    mystl::vector<int> S3(3);
+
+    // test set_union
+    mystl::set_intersection(S1.begin(), S1.end(), S2.begin(), S2.end(), S3.begin());
+
+    mystl::vector<int>::iterator iter = S3.begin();
+    int index = 0;
+    for(iter = S3.begin(); iter !=S3.end(); ++iter)
+    {
+      EXPECT_EQ(ia3[index++], *iter);
+    }
+  }
+
+  TEST(TestAlgorithms, TestSetDifference)
+  {
+    int ia1[6] = {1, 3, 5, 7, 9, 11};
+    int ia2[6] = {1, 2, 3, 5, 8, 13};
+    int ia3[3] = {7, 9, 11};
+
+    mystl::set<int> S1(ia1, ia1+6);
+    mystl::set<int> S2(ia2, ia2+6);
+    mystl::vector<int> S3(3);
+
+    // test set_union
+    mystl::set_difference(S1.begin(), S1.end(), S2.begin(), S2.end(), S3.begin());
+
+    mystl::vector<int>::iterator iter = S3.begin();
+    int index = 0;
+    for(iter = S3.begin(); iter !=S3.end(); ++iter)
+    {
+      EXPECT_EQ(ia3[index++], *iter);
+    }
+  }
+
+  TEST(TestAlgorithms, TestSetSymmetricDifference)
+  {
+    int ia1[6] = {1, 3, 5, 7, 9, 11};
+    int ia2[6] = {1, 2, 3, 5, 8, 13};
+    int ia3[6] = {2, 7, 8, 9, 11, 13};
+
+    mystl::set<int> S1(ia1, ia1+6);
+    mystl::set<int> S2(ia2, ia2+6);
+    mystl::vector<int> S3(6);
+
+    // test set_union
+    mystl::set_symmetric_difference(S1.begin(), S1.end(), S2.begin(), S2.end(), S3.begin());
+
+    mystl::vector<int>::iterator iter = S3.begin();
+    int index = 0;
+    for(iter = S3.begin(); iter !=S3.end(); ++iter)
+    {
+      EXPECT_EQ(ia3[index++], *iter);
+    }
+  }
+
 }// end of namespace

@@ -3,7 +3,7 @@ CFLAGS=-c
 LDFLAGS=-lgtest
 INCLUDES=/usr/local/include/
 LIBS=/usr/local/lib/
-SOURCES=gtest_main.cpp gtest_algo.cpp gtest_vector.cpp
+SOURCES=gtest_main.cpp gtest_algorithms.cpp gtest_vector.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
 TARGET=mystl_test
 DEBUG=-g
