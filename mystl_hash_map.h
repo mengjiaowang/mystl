@@ -128,6 +128,11 @@ namespace mystl
         return rep.insert_unique(obj);
       }
 
+      T& operator[] (const key_type &k)
+      {
+        return (*((insert(value_type(k, T()))).first)).second;
+      }
+
       template <class InputIterator>
       void insert(InputIterator first, InputIterator last)
       {
