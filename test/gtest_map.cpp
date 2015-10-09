@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
 #include "../map"
+#include "../multimap"
+#include "../mystl_pair.h"
 
 namespace mystl_test
 {
@@ -35,4 +37,32 @@ namespace mystl_test
       EXPECT_EQ(value++, iter->second);
     }
   }
+
+  /*
+  TEST(TestMultiMap, TestMultiMapInsert)
+  {
+    mystl::multimap<int, int> test_multimap;
+    test_multimap.insert(mystl::pair<int, int>(1,1));
+    test_multimap.insert(mystl::pair<int, int>(1,2));
+    test_multimap.insert(mystl::pair<int, int>(2,1));
+    test_multimap.insert(mystl::pair<int, int>(2,2));
+    test_multimap.insert(mystl::pair<int, int>(3,1));
+  }
+
+  TEST(TestMultiMap, TestMultiMapIterator)
+  {
+    mystl::multimap<int, int> test_multimap;
+    test_multimap.insert(mystl::pair<int, int>(1,1));
+    test_multimap.insert(mystl::pair<int, int>(1,2));
+    test_multimap.insert(mystl::pair<int, int>(2,1));
+    test_multimap.insert(mystl::pair<int, int>(2,2));
+    test_multimap.insert(mystl::pair<int, int>(3,1));
+
+    mystl::multimap<int, int>::iterator iter;
+    for(iter = test_multimap.begin(); iter != test_multimap.end(); ++iter)
+    {
+      std::cout << iter->first << " " << iter->second << std::endl;
+    }
+  }
+  */
 }
