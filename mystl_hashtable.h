@@ -203,10 +203,12 @@ namespace mystl
     return pos == last ? *(last - 1) : *pos;
   }
 
+  /*
   size_t max_bucket_count()
   {
     return __mystl_prime_list[__mystl_num_primes - 1];
   }
+  */
 
   template <class Value, class Key, class HashFcn, class ExtractKey,
            class EqualKey, class Alloc = mystl::alloc>

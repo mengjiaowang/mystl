@@ -174,6 +174,7 @@ namespace mystl
       {
         return rep.max_bucket_count();
       }
+
   };
 
   template <class Value, class HashFcn, class EqualKey, class Alloc>

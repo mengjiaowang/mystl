@@ -4,7 +4,6 @@
 int main()
 {
   // test constructor
-  mystl::hash_set<int> test_hs;
 
   // test empty
   std::cout << "empty = " << test_hs.empty() << std::endl;

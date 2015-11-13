@@ -94,55 +94,55 @@ namespace mystl
   };
 
   template <class T>
-  struct equal_to: public binary_function<T, T, T>
+  struct equal_to: public binary_function<T, T, bool>
   {
     T operator()(const T& x, const T& y) {return x == y;}
   };
 
   template <class T>
-  struct not_equal_to: public binary_function<T, T, T>
+  struct not_equal_to: public binary_function<T, T, bool>
   {
     T operator()(const T& x, const T& y) {return x != y;}
   };
 
   template <class T>
-  struct greater: public binary_function<T, T, T>
+  struct greater: public binary_function<T, T, bool>
   {
     T operator()(const T& x, const T& y) {return x > y;}
   };
 
   template <class T>
-  struct less: public binary_function<T, T, T>
+  struct less: public binary_function<T, T, bool>
   {
     T operator()(const T& x, const T& y) {return x < y;}
   };
 
   template <class T>
-  struct greater_equal: public binary_function<T, T, T>
+  struct greater_equal: public binary_function<T, T, bool>
   {
     T operator()(const T& x, const T& y) {return x >= y;}
   };
 
   template <class T>
-  struct less_equal: public binary_function<T, T, T>
+  struct less_equal: public binary_function<T, T, bool>
   {
     T operator()(const T& x, const T& y) {return x <= y;}
   };
 
   template <class T>
-  struct logical_and: public binary_function<T, T, T>
+  struct logical_and: public binary_function<T, T, bool>
   {
     T operator()(const T& x, const T& y) {return x && y;}
   };
 
   template <class T>
-  struct logical_or: public binary_function<T, T, T>
+  struct logical_or: public binary_function<T, T, bool>
   {
     T operator()(const T& x, const T& y) {return x || y;}
   };
 
   template <class T>
-  struct logical_not: public unary_function<T, T>
+  struct logical_not: public unary_function<T, bool>
   {
     T operator()(const T& x) {return !x;}
   };

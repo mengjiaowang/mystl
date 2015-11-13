@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "../hash_map"
+#include "../mystl_hash_map.h"
 #include "../hash_multimap"
 
 namespace mystl_test
