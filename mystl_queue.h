@@ -38,6 +38,7 @@
 #include "mystl_config.h"
 #include "vector"
 #include "mystl_heap.h"
+#include "mystl_function.h"
 
 namespace mystl
 {
