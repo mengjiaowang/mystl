@@ -325,4 +325,44 @@ namespace mystl_test
     }
   }
 
+  TEST(TestSort, TestInsertionSort)
+  {
+    int arr [] = {3,1,2,4,6,5,9,7,8,0};
+    mystl::__insertion_sort(arr, arr+10);
+    for(int i = 0; i != 10; ++i)
+    {
+      EXPECT_EQ(i, arr[i]);
+    }
+  }
+
+  TEST(TestSort, TestPartialSort1)
+  {
+    int arr [] = {3,1,2,4,6,5,9,7,8,0};
+    mystl::partial_sort(arr, arr+10, arr+10);
+    for(int i = 0; i != 10; ++i)
+    {
+      EXPECT_EQ(i, arr[i]);
+    }
+  }
+
+  TEST(TestSort, TestPartialSort2)
+  {
+    int arr [] = {3,1,2,4,6,5,9,7,8,0};
+    mystl::partial_sort(arr, arr+5, arr+10);
+    for(int i = 0; i != 5; ++i)
+    {
+      EXPECT_EQ(i, arr[i]);
+    }
+  }
+
+  TEST(TestSort, TestSort)
+  {
+    int arr [] = {3,1,2,4,6,5,9,7,8,0};
+    mystl::sort(arr, arr+10);
+    for(int i = 0; i != 10; ++i)
+    {
+      EXPECT_EQ(i, arr[i]);
+    }
+  }
+
 }// end of namespace
