@@ -325,6 +325,13 @@ namespace mystl_test
     }
   }
 
+  TEST(TestAlgorithms, TestNthElements)
+  {
+    int num [] = {22, 30, 30, 17, 33, 40, 17, 23, 22, 12, 20};
+    mystl::nth_element(num, num + 5, num + 11);
+    EXPECT_EQ(22, num[5]);
+  }
+
   TEST(TestSort, TestInsertionSort)
   {
     int arr [] = {3,1,2,4,6,5,9,7,8,0};
@@ -374,5 +381,6 @@ namespace mystl_test
       EXPECT_EQ(i, arr[i]);
     }
   }
+
 
 }// end of namespace

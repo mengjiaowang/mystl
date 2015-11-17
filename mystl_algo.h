@@ -701,6 +701,27 @@ namespace mystl
       __final_insertion_sort(first, last);
     }
   }
+
+  template <class RandomAccessIterator, class T>
+  void __nth_element(RandomAccessIterator first, RandomAccessIterator nth,
+      RandomAccessIterator last, T*)
+  {
+    while(last - first > 3)
+    {
+      RandomAccessIterator cut = __unguarded_partition(first, last,
+          T(__median(*first, *(first + (last - first)/2), *(last - 1))));
+      if(cut <= nth) first = cut;
+      else last = cut;
+    }
+    __insertion_sort(first, last);
+  }
+
+  template <class RandomAccessIterator>
+  inline void nth_element(RandomAccessIterator first,
+      RandomAccessIterator nth, RandomAccessIterator last)
+  {
+    __nth_element(first, nth, last, value_type(first));
+  }
 }
 
 #endif
