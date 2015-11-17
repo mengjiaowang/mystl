@@ -365,4 +365,14 @@ namespace mystl_test
     }
   }
 
+  TEST(TestSort, TestQuickSort)
+  {
+    int arr [] = {3,1,2,4,6,5,9,7,8,0};
+    mystl::quick_sort(arr, arr+10);
+    for(int i = 0; i != 10; ++i)
+    {
+      EXPECT_EQ(i, arr[i]);
+    }
+  }
+
 }// end of namespace

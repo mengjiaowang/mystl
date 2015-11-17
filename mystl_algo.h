@@ -660,6 +660,47 @@ namespace mystl
       __final_insertion_sort(first, last);
     }
   }
+
+  template <class RandomAccessIterator>
+  inline void __quick_sort_loop(RandomAccessIterator first, RandomAccessIterator last);
+
+  template <class RandomAccessIterator, class T>
+  void __quick_sort_loop_aux(RandomAccessIterator first, RandomAccessIterator last,
+      T*)
+  {
+    while(last - first > __stl_threshold)
+    {
+      // median-of-3 partitioning
+      RandomAccessIterator cut = __unguarded_partition(first, last,
+          T(__median(*first, *(first + (last - first)/2), *(last - 1))));
+      if(cut - first >= last - cut)
+      {
+        __quick_sort_loop(cut, last);
+        last = cut;
+      }
+      else
+      {
+        __quick_sort_loop(first, cut);
+        first = cut;
+      }
+    }
+  }
+
+  template <class RandomAccessIterator>
+  inline void __quick_sort_loop(RandomAccessIterator first, RandomAccessIterator last)
+  {
+    __quick_sort_loop_aux(first, last, value_type(first));
+  }
+
+  template <class RandomAccessIterator>
+  inline void quick_sort(RandomAccessIterator first, RandomAccessIterator last)
+  {
+    if(!(first == last))
+    {
+      __quick_sort_loop(first, last);
+      __final_insertion_sort(first, last);
+    }
+  }
 }
 
 #endif
